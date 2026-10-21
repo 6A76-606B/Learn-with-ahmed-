@@ -103,6 +103,8 @@ img.p{width:100%;height:auto;border-radius:8px;margin-top:8px}
 .hero h1{font-size:28px;margin-bottom:10px}
 .repl{direction:ltr;text-align:left;background:var(--bd);color:#fff;border-radius:10px;padding:18px;font:600 17px/1.8 ui-monospace,Menlo,monospace;margin-bottom:26px}
 .repl i{color:var(--y);font-style:normal}
+.acorner{position:fixed;top:calc(10px + env(safe-area-inset-top));left:calc(12px + env(safe-area-inset-left));z-index:6;min-height:40px;padding:6px 14px;font-size:13px;font-weight:500;border-radius:99px;background:#fff;color:var(--bd);border:1px solid var(--l);box-shadow:0 1px 4px #0002}
+.acorner+.hero{padding-top:calc(76px + env(safe-area-inset-top))}
 [hidden]{display:none!important}
 :root{--mono:"JetBrains Mono",ui-monospace,"Cascadia Code",Menlo,Consolas,monospace}
 #ide{--ink:#0d1017;--bar:#0a0c12;--ln:#222939;--tx:#e4e8f1;--dm:#7b859b;--ok:#35d07f;--er:#ff6b6b;--fz:15px;
@@ -300,7 +302,7 @@ const admin=()=>{
  return h;
 };
 
-const login=()=>`<div class=hero><div class=repl><i>&gt;&gt;&gt;</i> print("Hello, Python!")<br>Hello, Python!</div><h1>تعلّم بايثون من أول سطر</h1><p class=m style="margin-bottom:20px">سجّل دخولك بحساب جوجل وافتح أول درس.</p>${inApp?'<div class=card style="text-align:start;margin-bottom:16px">⚠️ شكلك فاتح اللينك من جوه تطبيق (فيسبوك/إنستجرام…). جوجل بتمنع تسجيل الدخول من المتصفح الداخلي، افتح اللينك في كروم أو سفاري (من القايمة ⋮ ← فتح في المتصفح).</div>':''}<button class=y data-a=login>تسجيل الدخول بجوجل</button></div>`;
+const login=()=>`<button class=acorner data-a=alogin>دخول كادمن</button><div class=hero><div class=repl><i>&gt;&gt;&gt;</i> print("Hello, Python!")<br>Hello, Python!</div><h1>تعلّم بايثون من أول سطر</h1><p class=m style="margin-bottom:20px">سجّل دخولك بحساب جوجل وافتح أول درس.</p>${inApp?'<div class=card style="text-align:start;margin-bottom:16px">⚠️ شكلك فاتح اللينك من جوه تطبيق (فيسبوك/إنستجرام…). جوجل بتمنع تسجيل الدخول من المتصفح الداخلي، افتح اللينك في كروم أو سفاري (من القايمة ⋮ ← فتح في المتصفح).</div>':''}<button class=y data-a=login>تسجيل الدخول بجوجل</button></div>`;
 
 const view=()=>!S.ready?spin
  :!S.u?login()
@@ -331,24 +333,24 @@ const render=()=>{
 };
 
 /* محرر بايثون بسيط: CodeMirror + Pyodide جوه Web Worker. الـ input بيشتغل بإعادة التشغيل بالقيم المدخلة */
-const wk=()=>{
- const V='0.26.4',HOSTS=['https://cdn.jsdelivr.net','https://fastly.jsdelivr.net','https://gcore.jsdelivr.net','https://testingcf.jsdelivr.net'];
+const wk=LOCAL=>{
+ const V='314.0.7',BASES=[...[].concat(LOCAL),'https://cdn.jsdelivr.net/pyodide/v'+V+'/full/','https://fastly.jsdelivr.net/pyodide/v'+V+'/full/','https://gcore.jsdelivr.net/pyodide/v'+V+'/full/','https://testingcf.jsdelivr.net/pyodide/v'+V+'/full/','https://unpkg.com/pyodide@'+V+'/'];
+ let errs=[],cur='';
  let n=0,live=0;const MAX=100000;
  const send=(t,e)=>{n+=t.length+1;if(n<=MAX)postMessage({o:t,e:e});else if(n-t.length-1<=MAX)postMessage({o:'… الناتج كبير أوي واتقطع',e:1})};
  /* السبب الأساسي للمشكلة: جوه Blob worker بايثون مش بيعرف مكان ملفاته، فلازم نحدد indexURL بنفسنا. وبنجرب أكتر من سيرفر */
  const load=async()=>{
-  let err;
-  for(const h of HOSTS){
-   const base=h+'/pyodide/v'+V+'/full/';
+  for(const base of BASES){
+   const host=base.split('/')[2];
    try{
     importScripts(base+'pyodide.js');
-    return await loadPyodide({indexURL:base,stdout:t=>live&&send(t,0),stderr:t=>live&&send(t,1)});
-   }catch(e){err=e}
+    return await loadPyodide({indexURL:base,stdout:t=>live&&send(t,0),stderr:t=>{if(live)send(t,1);else cur+=t}});
+   }catch(e){errs.push(host+': '+String((e&&e.message)||e).slice(0,160)+(cur?' | '+cur.trim().split('\n').pop().slice(0,120):''));cur=''}
   }
-  throw err;
+  throw new Error(errs.join('\n'));
  };
  const R=load();
- R.then(()=>{live=1;postMessage({ready:1})},x=>postMessage({o:'تعذّر تحميل بايثون — تأكد من النت وجرّب تاني.',e:1,bad:1}));
+ R.then(()=>{live=1;postMessage({ready:1})},x=>postMessage({o:'تعذّر تحميل بايثون — تأكد من النت وجرّب تاني.\nالتفاصيل:\n'+((x&&x.message)||x),e:1,bad:1}));
  onmessage=async({data})=>{
   n=0;
   let py;try{py=await R}catch(e){return}
@@ -390,7 +392,7 @@ const mark=l=>{
  }
 };
 const stat=()=>{
- $('#stt').textContent=busy?'⏳ شغّال…':wait?'⌨ في انتظار إدخال':ready?'جاهز · Python 3.12':failed?'⚠ فشل التحميل — اضغط ▶ للمحاولة تاني':'⏳ جاري تجهيز بايثون (أول مرة بياخد وقت)…';
+ $('#stt').textContent=busy?'⏳ شغّال…':wait?'⌨ في انتظار إدخال':ready?'جاهز · Python 3.14':failed?'⚠ فشل التحميل — اضغط ▶ للمحاولة تاني':'⏳ جاري تجهيز بايثون (أول مرة بياخد وقت)…';
  const k=busy?'run':wait?'wait':last||(ready?'idle':failed?'bad':'load');
  ide.dataset.s=k;
  $('#ost').textContent={run:'شغّال…',wait:'في انتظار إدخال',ok:'تم بنجاح',err:'فيه خطأ',idle:'جاهز',bad:'فشل التحميل',load:'بيجهّز بايثون…'}[k];
@@ -401,7 +403,7 @@ const boot=()=>{
  if(w)w.terminate();
  clearTimeout(bt);
  ready=busy=failed=wait=0;last='';inputs=[];stat();
- w=new Worker(URL.createObjectURL(new Blob(['('+wk+')()'],{type:'text/javascript'})));
+ w=new Worker(URL.createObjectURL(new Blob(['('+wk+')('+JSON.stringify([new URL('pyodide/',location.href).href,new URL('./',location.href).href])+')'],{type:'text/javascript'})));
  w.onerror=()=>{failed=1;busy=0;out('تعذّر تحميل بايثون — تأكد من الاتصال بالإنترنت.\n','e');stat()};
  w.onmessage=({data:d})=>{
   if(d.ready){ready=1;failed=0;clearTimeout(bt);if(skipAuto)skipAuto=0;else auto()}
@@ -530,7 +532,7 @@ document.addEventListener('click',async e=>{
  const b=e.target.closest('[data-a]');if(!b)return;
  const a=b.dataset.a,id=b.dataset.id;
  try{
-  if(a=='login'){
+  if(a=='login'||a=='alogin'){try{a=='alogin'?sessionStorage.setItem('adm_try','1'):sessionStorage.removeItem('adm_try')}catch(_){}
    const p=new GoogleAuthProvider();p.setCustomParameters({prompt:'select_account'});
    try{await signInWithPopup(auth,p)}catch(x){
     if(['auth/popup-blocked','auth/operation-not-supported-in-this-environment'].includes(x.code))await signInWithRedirect(auth,p);
@@ -606,6 +608,11 @@ onAuthStateChanged(auth,u=>{
  stop(un);stop(cs);
  Object.assign(S,{ready:1,u,me:null,adm:0,tab:'v',cur:null,eq:null,err:'',content:[],qs:[],users:[],prog:{},allProg:{},pl:0,ans:{},done:0});
  if(!u)return render();
+  let wa=0;try{wa=sessionStorage.getItem('adm_try')=='1';sessionStorage.removeItem('adm_try')}catch(_){}
+  if(wa){
+   if(notA(u)){setTimeout(()=>alert('الحساب ده ('+(u.email||'')+') مش حساب الأدمن. سجّل دخول بحساب الأدمن.'),50);signOut(auth);return}
+   S.adm=1;S.tab='ac';
+  }
  const r=doc(db,'users',u.uid);
  un.push(onSnapshot(r,s=>{
   if(!s.exists())return setDoc(r,{name:u.displayName||'',email:u.email,photo:u.photoURL||'',banned:false,at:serverTimestamp()}).catch(fail);
