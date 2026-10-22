@@ -350,6 +350,7 @@ body.ide-on #app{display:none}
 #ide .stopb{background:#d64545;color:#fff;font-weight:700;height:38px;padding:0 16px;animation:pulseR 1s ease-in-out infinite}
 @keyframes pulseR{50%{box-shadow:0 0 0 6px #ef4f5f33}}
 #ide .work{flex:1;min-height:0;display:flex;direction:ltr;padding:10px;gap:0}
+#ide .mobile-tabs{display:none}
 #ide .frame{flex:1;min-height:0;display:flex;border:1px solid var(--eln);border-radius:16px;overflow:hidden;box-shadow:0 20px 50px -30px #0008;background:var(--bg1)}
 #ide .pane{display:flex;flex-direction:column;min-width:0;min-height:0}
 #pcode{flex:0 0 var(--sw,50%);background:var(--ebg);animation:rise .7s var(--ease) .2s both}
@@ -432,10 +433,18 @@ li.CodeMirror-hint-active{background:var(--a);color:#fff}
  #ide .acts .ibtn{justify-content:flex-start;height:42px}
  #ide .acts .sep{width:auto;height:1px;margin:4px 6px}
  #ide .acts .lb2{display:inline}
- #ide .work{padding:6px}
- #ide .frame{flex-direction:column;border-radius:14px}
- #split{width:auto;height:8px;cursor:row-resize;border-inline:0;border-block:1px solid var(--eln)}
- #split::after{width:36px;height:2px}
+ #ide .work{padding:6px;flex-direction:column;gap:7px}
+ #ide .mobile-tabs{display:flex;flex:none;gap:7px;padding:4px;background:var(--bg1);border:1px solid var(--eln);border-radius:12px}
+ #ide .mobile-tabs button{flex:1;height:38px;padding:0 12px;border:1px solid transparent;background:transparent;color:var(--mu);font:600 14px "IBM Plex Sans Arabic",system-ui;touch-action:manipulation}
+ #ide .mobile-tabs button.active{background:var(--bg3);border-color:var(--eln);color:var(--tx);box-shadow:inset 0 -2px #ffd43b}
+ #ide .frame{flex-direction:column;border-radius:14px;width:100%}
+ #ide:not(.result-view) #pout{display:none}
+ #ide:not(.result-view) #split{display:none}
+ #ide.result-view #pcode{display:none}
+ #ide.result-view #split{display:none}
+ #ide .pane{flex:1 1 auto!important;width:100%;min-height:0}
+ #ide #ed{min-height:0;flex:1}
+ #ide.result-view #pout{display:flex}
  #ide.kbd #sb{display:none}
  #ide.kbd #pcode{flex-basis:58%}
  #sb>span:nth-child(2),#sb>span:nth-child(3){display:none}
@@ -551,7 +560,12 @@ hr.sp2{border:0;border-top:1px dashed var(--ln2);margin:20px 0}
   <button class="runb" id="run" disabled>▶ <span class="hm">تشغيل</span> <kbd>Ctrl ↵</kbd></button>
   <button class="stopb" id="stop" hidden>■ <span class="hm">إيقاف</span></button>
  </div>
- <div class="work"><div class="frame" id="work">
+ <div class="work">
+  <div class="mobile-tabs" role="tablist" aria-label="عرض المحرر">
+   <button type="button" id="tab-code" class="active" role="tab" aria-selected="true">⌨️ الكود</button>
+   <button type="button" id="tab-result" role="tab" aria-selected="false">▸ النتيجة</button>
+  </div>
+  <div class="frame" id="work">
   <div class="pane" id="pcode">
    <div class="ptab"><span class="ft"><i></i>main.py</span><span id="dirty" title="بيتحفظ تلقائي"></span><span class="sp"></span><span class="hint2">Ctrl+Space اقتراحات · Ctrl+/ تعليق</span></div>
    <div id="ed" dir="ltr"></div>
@@ -566,7 +580,7 @@ hr.sp2{border:0;border-top:1px dashed var(--ln2);margin:20px 0}
    </div>
   </div>
  </div></div>
- <div id="sb"><span id="pos">Ln 1, Col 1</span><span id="ver2">Python</span><span>UTF-8 · Spaces: 4</span><span class="sp"></span><span id="stt"></span></div>
+ <div id="sb"><span id="pos">Ln 1, Col 1</span><span id="ver2">Python</span><span>نسخة 22-10-B</span><span>UTF-8 · Spaces: 4</span><span class="sp"></span><span id="stt"></span></div>
 </section>
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
@@ -605,7 +619,7 @@ const errMsg=x=>({
  'permission-denied':'مفيش صلاحية للوصول. اتأكد إنك نشرت الـ Rules الجديدة اللي في أول الملف.',
  'auth/unauthorized-domain':'دومين الموقع مش مضاف في Firebase ← Authentication ← Settings ← Authorized domains.',
  'auth/network-request-failed':'في مشكلة في الإنترنت، جرّب تاني.',
- 'auth/invalid-credential':'الإيميل أو كلمة المرور غلط.','auth/wrong-password':'كلمة المرور غلط.','auth/user-not-found':'الحساب ده مش موجود في Firebase.',
+ 'auth/invalid-credential':'كلمة المرور غلط، أو الحساب ده مش متضاف في Firebase ← Authentication ← Users بالإيميل وكلمة المرور.','auth/wrong-password':'كلمة المرور غلط.','auth/user-not-found':'الحساب ده مش موجود في Firebase.',
  'auth/invalid-email':'الإيميل مكتوب غلط.','auth/too-many-requests':'محاولات كتير، استنى شوية وجرّب تاني.',
  'auth/operation-not-allowed':'تسجيل الدخول بالإيميل وكلمة المرور مش متفعّل في Firebase ← Authentication ← Sign-in method.',
  'unavailable':'السيرفر مش متاح دلوقتي، جرّب بعد شوية.'
@@ -1047,7 +1061,7 @@ const hint=c=>{
  return list.length?{list,from:CodeMirror.Pos(p.line,p.ch-pre.length),to:p}:undefined;
 };
 
-let legacy=0,cm,w,ready=0,busy=0,failed=0,wait=0,runCode='',inputs=[],errLn=-1,pend=0,isAuto=0,tmo=0,buf=null,bt=0,ver='',lastFail=0,auto=1;
+let pyLt=0,legacy=0,cm,w,ready=0,busy=0,failed=0,wait=0,runCode='',inputs=[],errLn=-1,pend=0,isAuto=0,tmo=0,buf=null,bt=0,ver='',lastFail=0,auto=1;
 try{auto=localStorage.getItem('py-auto')!=='0'}catch(e){}
 const AUTO_MS=5000,DEB=550;
 const o=$('#out'),inf=$('#inf'),inp=$('#inp'),coarse=matchMedia('(pointer:coarse)').matches,I=$('#ide');
@@ -1067,11 +1081,12 @@ const boot=()=>{
  if(w)w.terminate();
  ready=busy=failed=wait=0;stat();
  const src=legacy?'importScripts('+JSON.stringify(PY_OLD)+');('+wk+')()':'import{loadPyodide}from'+JSON.stringify(PYODIDE)+';self.loadPyodide=loadPyodide;('+wk+')()';
- w=new Worker(URL.createObjectURL(new Blob([src],{type:'text/javascript'})),legacy?undefined:{type:'module'});
+ clearTimeout(pyLt);if(!legacy)pyLt=setTimeout(()=>{if(!ready&&!legacy){legacy=1;boot()}},45000);
+ try{w=new Worker(URL.createObjectURL(new Blob([src],{type:'text/javascript'})),legacy?undefined:{type:'module'})}catch(x){if(!legacy){legacy=1;return boot()}failed=1;out('المتصفح ده مش بيشغّل بايثون — حدّث كروم وجرّب تاني.\n','e');stat();return}
  w.onerror=e=>{if(!ready&&!legacy){e.preventDefault?.();legacy=1;boot();return}failed=1;busy=0;flush();out('تعذّر تحميل بايثون — تأكد من الاتصال بالإنترنت.\n','e');stat()};
  w.onmessage=({data:d})=>{
-  if(d.ready){ready=1;ver=d.ver;$('#ver').textContent='Python '+ver;$('#ver2').textContent='Python '+ver;if(pend||auto){pend=0;setTimeout(()=>run(1),0)}}
-  if(d.bad)failed=1;
+  if(d.ready){clearTimeout(pyLt);ready=1;ver=d.ver;$('#ver').textContent='Python '+ver;$('#ver2').textContent='Python '+ver;if(pend||auto){pend=0;setTimeout(()=>run(1),0)}}
+  if(d.bad){if(!legacy){legacy=1;clearTimeout(pyLt);boot();return}failed=1}
   if(d.o!=null)out((d.fail&&!endNL?'\n':'')+d.o,d.e==1?'e':d.e==2?'i':'');
   if(d.line)mark(d.line);
   if(d.need){busy=0;wait=1;clearTimeout(tmo);flush();chip('run','⌨ مستني إدخال');if(!cm.hasFocus()||!isAuto)setTimeout(()=>inp.focus(),60)}
@@ -1128,6 +1143,17 @@ const download=()=>{const a=document.createElement('a');a.href=URL.createObjectU
 const fsEl=()=>document.fullscreenElement||document.webkitFullscreenElement;
 const setFs=on=>{const d=document.documentElement;try{if(on&&!fsEl())(d.requestFullscreen||d.webkitRequestFullscreen).call(d);else if(!on&&fsEl())(document.exitFullscreen||document.webkitExitFullscreen).call(document)}catch(e){}};
 const initUi=()=>{
+ const setMobileView=view=>{
+  const result=view==='result';
+  I.classList.toggle('result-view',result);
+  $('#tab-code').classList.toggle('active',!result);
+  $('#tab-result').classList.toggle('active',result);
+  $('#tab-code').setAttribute('aria-selected',String(!result));
+  $('#tab-result').setAttribute('aria-selected',String(result));
+  if(cm)setTimeout(()=>cm.refresh(),40);
+ };
+ $('#tab-code').onclick=()=>setMobileView('code');
+ $('#tab-result').onclick=()=>setMobileView('result');
  const kb=$('#kb');
  $('#keys').innerHTML=K.map(([l],i)=>`<button data-k=${i}${i?'':' class=go'}>${E(l)}</button>`).join('');
  $('#sn').innerHTML=SN.map(([l],i)=>`<button data-s=${i}>${E(l)}</button>`).join('');
@@ -1178,7 +1204,7 @@ const initUi=()=>{
 const openIde=()=>{
  if(!cm){
   let v;try{v=localStorage.getItem('py-code')}catch(e){}
-  cm=window._cm=CodeMirror($('#ed'),{value:v||EX[0][1],mode:'python',lineNumbers:true,gutters:['CodeMirror-linenumbers','errg'],indentUnit:4,smartIndent:true,matchBrackets:true,autoCloseBrackets:true,styleActiveLine:true,lineWrapping:true,
+  cm=window._cm=CodeMirror($('#ed'),{value:v||EX[0][1],mode:'python',lineNumbers:true,gutters:['CodeMirror-linenumbers','errg'],indentUnit:4,smartIndent:true,matchBrackets:true,autoCloseBrackets:true,styleActiveLine:true,lineWrapping:true,spellcheck:false,autocorrect:false,autocapitalize:false,inputStyle:'textarea',
    hintOptions:{hint,completeSingle:false,extraKeys:{Enter:(c,h)=>{h.close();c.execCommand('newlineAndIndent')}}},
    extraKeys:{'Ctrl-Enter':()=>run(),'Cmd-Enter':()=>run(),'Shift-Enter':()=>run(),'Ctrl-S':download,'Cmd-S':download,'Ctrl-/':'toggleComment','Cmd-/':'toggleComment','Ctrl-Space':'autocomplete',Tab:c=>c.somethingSelected()?c.execCommand('indentMore'):c.execCommand('insertSoftTab'),'Shift-Tab':'indentLess','Ctrl-D':dup,'Esc':()=>setFs(false)}});
   let dt,at;
@@ -1186,7 +1212,7 @@ const openIde=()=>{
    clearErr();$('#dirty').classList.add('on');clearTimeout(dt);dt=setTimeout(()=>{try{localStorage.setItem('py-code',cm.getValue())}catch(e){};$('#dirty').classList.remove('on')},400);
    if(auto){clearTimeout(at);I.classList.add('stale');at=setTimeout(()=>run(1),DEB)}
   });
-  cm.on('inputRead',(c,ch)=>{if(ch.origin!='+input'||!/[\w.]/.test(ch.text[0]))return;const t=c.getTokenTypeAt(c.getCursor());if(!/string|comment|number/.test(t||''))c.showHint()});
+  if(!coarse)cm.on('inputRead',(c,ch)=>{if(ch.origin!='+input'||!/[\w.]/.test(ch.text[0]))return;const t=c.getTokenTypeAt(c.getCursor());if(!/string|comment|number/.test(t||''))c.showHint()});
   cm.on('cursorActivity',()=>{const p=cm.getCursor();$('#pos').textContent='Ln '+(p.line+1)+', Col '+(p.ch+1)+(cm.somethingSelected()?' · '+cm.getSelection().length+' محدد':'')});
   $('#run').onclick=()=>run();
   $('#stop').onclick=()=>{flush();out('■ تم إيقاف التشغيل\n','m');boot()};
@@ -1394,15 +1420,4 @@ onAuthStateChanged(auth,async u=>{
  Object.assign(S,{ready:1,u,me:null,adm:A?1:0,tab:A?'ao':'v',cur:null,eq:null,err:'',am:0,content:[],qs:[],users:[],prog:{},allProg:{},live:{},runs:[],settings:{},pl:0,ans:{},done:0,sel:null});
  if(!u)return render();
  const r=doc(db,'users',u.uid);
- un.push(onSnapshot(r,s=>{
-  if(!s.exists())return setDoc(r,{name:u.displayName||(A?'Admin':''),email:u.email,photo:u.photoURL||'',banned:false,at:serverTimestamp()}).catch(fail);
-  S.me=s.data();S.err='';
-  if(S.me.banned){stop(cs);Object.assign(S,{content:[],qs:[],users:[],prog:{},allProg:{},pl:1})}else feed();
-  render();
- },fail));
- render();
-});
-render();
-</script>
-</body>
-</html>
+ un
