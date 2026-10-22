@@ -1420,4 +1420,12 @@ onAuthStateChanged(auth,async u=>{
  Object.assign(S,{ready:1,u,me:null,adm:A?1:0,tab:A?'ao':'v',cur:null,eq:null,err:'',am:0,content:[],qs:[],users:[],prog:{},allProg:{},live:{},runs:[],settings:{},pl:0,ans:{},done:0,sel:null});
  if(!u)return render();
  const r=doc(db,'users',u.uid);
- un
+ un.push(onSnapshot(r,s=>{
+  S.me=s.exists()?s.data():{banned:false};
+  feed();
+  render();
+},x=>{S.me={banned:false};fail(x)}));
+});
+</script>
+</body>
+</html>
