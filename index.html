@@ -1084,8 +1084,9 @@ const hint=c=>{
 };
 
 let pyLt=0,legacy=0,cm,w,ready=0,busy=0,failed=0,wait=0,runCode='',inputs=[],errLn=-1,pend=0,isAuto=0,tmo=0,buf=null,bt=0,ver='',lastFail=0,auto=1;
-try{auto=localStorage.getItem('py-auto')!=='0'}catch(e){}
-const AUTO_MS=5000,DEB=550;
+/* التشغيل التلقائي دايماً شغّال (زر التبديل مخفي على الموبايل) */
+let atT=0;
+const AUTO_MS=5000,DEB=120;
 const o=$('#out'),inf=$('#inf'),inp=$('#inp'),coarse=matchMedia('(pointer:coarse)').matches,I=$('#ide');
 let endNL=1;
 const out=(t,c)=>{if(t)endNL=/\n$/.test(t);const s=document.createElement('span');if(c)s.className=c;s.textContent=t;(buf||o).append(s);if(!buf){while(o.childNodes.length>3000)o.firstChild.remove();o.scrollTop=o.scrollHeight}};
@@ -1125,7 +1126,7 @@ const boot=()=>{
 };
 const go=()=>{
  clearErr();wait=0;busy=1;endNL=1;I.classList.remove('err');o.classList.toggle('anim',!isAuto);
- buf=document.createDocumentFragment();bt=setTimeout(flush,isAuto?400:120);I.classList.add('stale');stat();
+ buf=document.createDocumentFragment();bt=setTimeout(flush,isAuto?60:120);I.classList.add('stale');stat();
  w.postMessage({code:runCode,inputs});clearTimeout(tmo);
  if(isAuto)tmo=setTimeout(()=>{if(!busy)return;flush();o.textContent='';out('⏱ الكود أخد وقت طويل — غالباً فيه لوب مش بيخلص (زي while True).\nصلّحه أو اضغط ▶ لتشغيله يدوي من غير حد زمني.\n','e');chip('bad','⏱ وقت طويل');I.classList.add('err');boot()},AUTO_MS);
 };
@@ -1135,7 +1136,7 @@ const run=(a=0)=>{
  if(failed){boot();return}
  if(!ready){pend=1;return}
  runCode=cm.getValue();
- if(a&&!runCode.trim()){o.textContent='';chip('','');clearErr();I.classList.remove('err');return}
+ if(a&&!runCode.trim()){o.textContent='';chip('','');clearErr();I.classList.remove('err');I.classList.remove('stale');return}
  isAuto=a;if(!a){inputs=[];inp.value=''}
  go();
 };
@@ -1173,6 +1174,8 @@ const initUi=()=>{
   $('#tab-code').setAttribute('aria-selected',String(!result));
   $('#tab-result').setAttribute('aria-selected',String(result));
   if(cm)setTimeout(()=>cm.refresh(),40);
+  /* أول ما تفتح النتيجة: لو في تعديل لسه ما اتشغّلش، شغّله فوراً، وأظهر اللي جاهز من غير انتظار */
+  if(result){if(atT){clearTimeout(atT);atT=0;run(1)}flush()}
  };
  $('#tab-code').onclick=()=>setMobileView('code');
  $('#tab-result').onclick=()=>setMobileView('result');
@@ -1229,10 +1232,10 @@ const openIde=()=>{
   cm=window._cm=CodeMirror($('#ed'),{value:v||EX[0][1],mode:'python',lineNumbers:true,gutters:['CodeMirror-linenumbers','errg'],indentUnit:4,smartIndent:true,matchBrackets:true,autoCloseBrackets:true,styleActiveLine:true,lineWrapping:true,spellcheck:false,autocorrect:false,autocapitalize:false,inputStyle:'textarea',
    hintOptions:{hint,completeSingle:false,extraKeys:{Enter:(c,h)=>{h.close();c.execCommand('newlineAndIndent')}}},
    extraKeys:{'Ctrl-Enter':()=>run(),'Cmd-Enter':()=>run(),'Shift-Enter':()=>run(),'Ctrl-S':download,'Cmd-S':download,'Ctrl-/':'toggleComment','Cmd-/':'toggleComment','Ctrl-Space':'autocomplete',Tab:c=>c.somethingSelected()?c.execCommand('indentMore'):c.execCommand('insertSoftTab'),'Shift-Tab':'indentLess','Ctrl-D':dup,'Esc':()=>setFs(false)}});
-  let dt,at;
+  let dt;
   cm.on('change',()=>{
    clearErr();$('#dirty').classList.add('on');clearTimeout(dt);dt=setTimeout(()=>{try{localStorage.setItem('py-code',cm.getValue())}catch(e){};$('#dirty').classList.remove('on')},400);
-   if(auto){clearTimeout(at);I.classList.add('stale');at=setTimeout(()=>run(1),DEB)}
+   if(auto){clearTimeout(atT);I.classList.add('stale');atT=setTimeout(()=>{atT=0;run(1)},DEB)}
   });
   if(!coarse)cm.on('inputRead',(c,ch)=>{if(ch.origin!='+input'||!/[\w.]/.test(ch.text[0]))return;const t=c.getTokenTypeAt(c.getCursor());if(!/string|comment|number/.test(t||''))c.showHint()});
   cm.on('cursorActivity',()=>{const p=cm.getCursor();$('#pos').textContent='Ln '+(p.line+1)+', Col '+(p.ch+1)+(cm.somethingSelected()?' · '+cm.getSelection().length+' محدد':'')});
@@ -1442,11 +1445,25 @@ onAuthStateChanged(auth,async u=>{
  Object.assign(S,{ready:1,u,me:null,adm:A?1:0,tab:A?'ao':'v',cur:null,eq:null,err:'',am:0,content:[],qs:[],users:[],prog:{},allProg:{},live:{},runs:[],settings:{},pl:0,ans:{},done:0,sel:null});
  if(!u)return render();
  const r=doc(db,'users',u.uid);
- un.push(onSnapshot(r,s=>{
-  S.me=s.exists()?s.data():{banned:false};
+ let making=0;
+ un.push(onSnapshot(r,async s=>{
+  /* لقطة محلية لسه السيرفر ما أكّدهاش: نتجاهلها عشان قواعد الأمان تلاقي المستند موجود */
+  if(s.metadata.hasPendingWrites)return;
+  if(!s.exists()){
+   if(A){S.me={banned:false};feed();render();return}
+   if(making)return;making=1;
+   try{
+    await setDoc(r,{name:u.displayName||'',email:u.email||'',photo:u.photoURL||'',banned:false,at:serverTimestamp()});
+    /* setDoc بيخلص بعد ما السيرفر يكتب المستند فعلاً، فنقدر نبدأ نقرا بأمان */
+    S.me={name:u.displayName||'',email:u.email||'',photo:u.photoURL||'',banned:false};
+    feed();render();
+   }catch(x){making=0;fail(x)}
+   return;
+  }
+  S.me=s.data();
   feed();
   render();
-},x=>{S.me={banned:false};fail(x)}));
+ },x=>{S.me={banned:false};fail(x)}));
 });
 </script>
 </body>
