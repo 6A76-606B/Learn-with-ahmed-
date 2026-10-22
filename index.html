@@ -456,6 +456,21 @@ li.CodeMirror-hint-active{background:var(--a);color:#fff}
  #ide .itop .back{display:inline-flex!important;align-items:center;justify-content:center;gap:8px;padding:0 14px}
  #ide .itop .back .hm{display:inline!important}
 }
+/* وضع الهاتف المبسّط: تشغيل تلقائي، بدون زر التشغيل أو صف الأوامر */
+#ide .runb{display:none!important}
+#ide #kbw{display:none!important}
+@media(max-width:860px){
+ /* الهاتف: تبويبان منفصلان، الكود أو النتيجة فقط في كل مرة */
+ #ide .work{flex:1;min-height:0;padding:6px;gap:7px}
+ #ide .mobile-tabs{display:flex!important}
+ #ide .frame{display:flex;flex:1;min-height:0;flex-direction:column;width:100%}
+ #ide:not(.result-view) #pcode{display:flex!important;flex:1 1 auto!important;width:100%;min-height:0}
+ #ide:not(.result-view) #pout{display:none!important}
+ #ide.result-view #pcode{display:none!important}
+ #ide.result-view #pout{display:flex!important;flex:1 1 auto!important;width:100%;min-height:0}
+ #ide #split{display:none!important}
+ #ide #ed{flex:1;min-height:0}
+}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 .fv{position:relative;margin-top:12px;border-radius:12px;overflow:hidden;background:var(--chip);aspect-ratio:4/3;max-height:75vh}
 .fv iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
