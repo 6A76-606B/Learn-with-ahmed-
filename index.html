@@ -72,9 +72,11 @@ service cloud.firestore {
       allow delete: if adm();
       match /msgs/{m} {
         allow read: if adm() || (request.auth.uid==u && ok());
-        allow create: if request.resource.data.keys().hasOnly(['from','text','at'])
-          && request.resource.data.text is string && request.resource.data.text.size()>0 && request.resource.data.text.size()<=2000
-          && ((request.auth.uid==u && ok() && request.resource.data.from=='u') || (adm() && request.resource.data.from=='a'));
+        allow create: if request.resource.data.keys().hasOnly(['from','text','at','img','aud','dur'])
+          && request.resource.data.keys().hasAll(['from','text','at'])
+          && ((request.auth.uid==u && ok() && request.resource.data.from=='u') || (adm() && request.resource.data.from=='a'))
+          && request.resource.data.text is string && request.resource.data.text.size()<=2000
+          && (('img' in request.resource.data) || ('aud' in request.resource.data) || request.resource.data.text.size()>0);
         allow delete: if adm();
       }
     }
@@ -86,6 +88,7 @@ service cloud.firestore {
 }
 
 6) (الدعم/الشات) القواعد بتاعة support فوق لازم تتنشر مع الباقي، من غيرها الرسايل مش هتتبعت.
+   (الأفضل تنسخ ملف firestore.rules الكامل المرفق بدل النسخة المختصرة اللي فوق، لأنه بيتحقق من الصورة والفويس بدقة.)
 7) مش محتاج Firebase Storage خالص (الموقع شغال على الخطة المجانية Spark):
    الفيديوهات بلينك يوتيوب/تيك توك، والصور بتتحفظ في Firestore، والملفات الكبيرة بلينك Google Drive.
 -->
@@ -632,9 +635,9 @@ body.sup-on{overflow:hidden}
 .fc:hover,.fc:focus-visible{transform:translateY(-4px) scale(1.015);border-color:var(--c1);box-shadow:0 18px 38px -18px var(--c1);outline:0}
 .fc:hover::before,.fc:focus-visible::before{opacity:1}
 .fc:active{transform:scale(.97);transition-duration:.08s}
-.fi{width:54px;height:54px;border-radius:16px;flex:none;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,var(--c1),var(--c2));box-shadow:0 12px 24px -10px var(--c1);transition:transform .45s var(--spring)}
-.fc:hover .fi{transform:rotate(-8deg) scale(1.1)}
-.fi svg{width:28px;height:28px}
+.fwi{width:54px;height:54px;border-radius:16px;flex:none;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,var(--c1),var(--c2));box-shadow:0 12px 24px -10px var(--c1);transition:transform .45s var(--spring)}
+.fc:hover .fwi{transform:rotate(-8deg) scale(1.1)}
+.fwi svg{width:28px;height:28px}
 .ftx{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
 .ftx b{font:800 17px var(--disp)}
 .ftx small{color:var(--m);font:600 13px var(--mono);direction:ltr;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -648,8 +651,43 @@ body.sup-on{overflow:hidden}
 /* موبايل: هيدر مضبوط */
 header button{white-space:nowrap;flex:none}
 @media(max-width:430px){header .hl{display:none}header .y.sm{width:42px;padding:0!important}header .fol .fl{display:none}#app header button.fol{width:42px;padding:0!important}}
-@media(max-width:400px){.fbox{padding:22px 12px 16px;border-radius:24px}.fhead h2{font-size:21px}.fc{padding:12px;gap:10px}.fi{width:46px;height:46px;border-radius:14px}.fi svg{width:24px;height:24px}.ftx small{font-size:12px;white-space:normal;word-break:break-all}.fgo span{display:none}.fgo{padding:8px}}
+@media(max-width:400px){.fbox{padding:22px 12px 16px;border-radius:24px}.fhead h2{font-size:21px}.fc{padding:12px;gap:10px}.fwi{width:46px;height:46px;border-radius:14px}.fwi svg{width:24px;height:24px}.ftx small{font-size:12px;white-space:normal;word-break:break-all}.fgo span{display:none}.fgo{padding:8px}}
 .fbox:focus{outline:0}
+/* صور الشات */
+.supatt{flex:none;width:46px;height:46px;min-height:46px!important;padding:0!important;border-radius:50%!important;background:transparent!important;color:var(--m)!important}
+.supatt:hover{color:var(--t)!important;background:var(--chip)!important}
+.supatt svg{width:24px;height:24px}
+.supatt:disabled{opacity:.5}
+.suppv[hidden]{display:none}
+.suppv{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--s2);border-top:1px solid var(--ln);flex:none;animation:rise .35s var(--ease) both}
+.suppv img{width:56px;height:56px;object-fit:cover;border-radius:10px;flex:none}
+.suppv span{flex:1;min-width:0;color:var(--m);font-size:13px;line-height:1.5}
+.suppv button{flex:none;width:34px;height:34px;min-height:34px!important;padding:0!important;border-radius:50%!important}
+.sb img.simg{display:block;width:240px;max-width:100%;max-height:320px;object-fit:cover;border-radius:10px;margin:2px 0 5px;cursor:zoom-in;background:var(--s3)}
+.simv{position:fixed;inset:0;z-index:300;background:#000d;display:grid;place-items:center;padding:14px;animation:fadeIn .25s both;cursor:zoom-out}
+.simv img{max-width:100%;max-height:100%;object-fit:contain;border-radius:12px;box-shadow:0 30px 80px #000}
+.simvx{position:absolute!important;top:calc(14px + env(safe-area-inset-top));left:14px;width:42px;height:42px;padding:0!important;border-radius:50%!important;background:#ffffff26!important;color:#fff!important}
+/* رسائل صوتية */
+.supmic{color:var(--m)!important}
+.suprec{display:none;align-items:center;gap:10px;padding:8px 10px;padding-bottom:calc(8px + env(safe-area-inset-bottom));background:var(--s2);border-top:1px solid var(--ln);flex:none}
+.supp.recing .suprec{display:flex;animation:rise .3s var(--ease) both}
+.supp.recing .supf,.supp.recing .suppv{display:none}
+.recx{flex:none;width:44px;height:44px;min-height:44px!important;padding:0!important;border-radius:50%!important;background:var(--chip)!important;color:var(--r)!important;font-size:18px}
+.recm{flex:1;min-width:0;display:flex;align-items:center;gap:10px;background:var(--s1);border:1px solid var(--ln2);border-radius:23px;height:46px;padding:0 16px}
+.recd{width:11px;height:11px;border-radius:50%;background:#ef4f5f;flex:none;animation:recp 1s ease-in-out infinite}
+@keyframes recp{50%{opacity:.25;transform:scale(.7)}}
+.recm b{font:700 15px var(--mono);direction:ltr;flex:none}
+.recw{flex:1;display:flex;align-items:center;justify-content:center;gap:3px;height:26px;direction:ltr;overflow:hidden}
+.recw i{width:3px;border-radius:2px;background:var(--m);height:7px;animation:recw 1s ease-in-out infinite}
+.recw i:nth-child(2n){animation-delay:.15s}.recw i:nth-child(3n){animation-delay:.3s}.recw i:nth-child(5n){animation-delay:.45s}
+@keyframes recw{50%{height:22px}}
+.vm{display:flex;align-items:center;gap:10px;min-width:210px;padding:2px 0 3px}
+.vplay{flex:none;width:38px;height:38px;min-height:38px!important;padding:0!important;border-radius:50%!important;background:#00a884!important;color:#fff!important}
+.vplay svg{width:18px;height:18px}
+.vbar{flex:1;height:5px;border-radius:3px;background:#8884;overflow:hidden}
+.vbar i{display:block;height:100%;width:0;background:#00a884;transition:width .25s linear}
+.vtm{flex:none;font:600 12px var(--mono);opacity:.8;direction:ltr}
+@media(prefers-reduced-motion:reduce){.recd,.recw i{animation:none!important}}
 </style>
 </head>
 <body>
@@ -868,7 +906,7 @@ const openFollow=()=>{
  const o=document.createElement('div');o.className='fo';o.setAttribute('role','dialog');o.setAttribute('aria-modal','true');o.setAttribute('aria-label','تابعنا');
  o.innerHTML=`<div class=fbox><button type=button class=fx aria-label="إغلاق">✕</button>
   <div class=fhead><div class=fburst>💛</div><h2>تابعنا على <em>السوشيال</em></h2><p>اختار المنصة اللي تفضّلها وتابعنا 👇</p></div>
-  <div class=flist>${SOC.map((x,i)=>`<a class=fc href="${x.u}" target=_blank rel="noopener noreferrer" style="--i:${i};--c1:${x.c1};--c2:${x.c2}"><span class=fi>${x.i}</span><span class=ftx><b>${x.n}</b><small>${x.h}</small></span><span class=fgo><span>تابع</span>${chev}</span></a>`).join('')}</div>
+  <div class=flist>${SOC.map((x,i)=>`<a class=fc href="${x.u}" target=_blank rel="noopener noreferrer" style="--i:${i};--c1:${x.c1};--c2:${x.c2}"><span class=fwi>${x.i}</span><span class=ftx><b>${x.n}</b><small>${x.h}</small></span><span class=fgo><span>تابع</span>${chev}</span></a>`).join('')}</div>
   <div class=ffoot>شكراً إنك معانا ❤️</div></div>`;
  const prevOv=document.body.style.overflow;document.body.style.overflow='hidden';
  const close=()=>{if(!foOpen)return;foOpen=0;document.removeEventListener('keydown',kd,true);o.classList.add('out');document.body.style.overflow=prevOv;setTimeout(()=>o.remove(),230)};
@@ -1441,7 +1479,87 @@ const delRuns=async uid=>{
 };
 
 /* ===== الدعم (شات زي واتساب) ===== */
-const SUP={open:0,uid:null,msgs:[],un:null,rd:0,stick:0,ld:0};
+IC.img='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="1.8"/><path d="m21 16-5-5-9 9"/></svg>';
+const SUP={open:0,uid:null,msgs:[],un:null,rd:0,stick:0,ld:0,img:null};
+IC.mic='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>';
+const PLAY='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>',PAUSE='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>';
+const REC_MAX=60,REC={mr:null,chunks:[],t0:0,iv:0,stream:null,cancel:0},VOI={id:null,au:null};
+const fmtT=s=>Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0');
+const audOk=v=>typeof v=='string'&&/^data:audio\/(webm|mp4|ogg|aac|mpeg);base64,/.test(v);
+const audH=m=>m.aud&&audOk(m.aud)?`<div class=vm data-id="${E(m.id)}"><button type=button class=vplay data-a=vplay data-id="${E(m.id)}" aria-label="تشغيل">${PLAY}</button><div class=vbar><i></i></div><span class=vtm>${fmtT(m.dur||0)}</span></div>`:'';
+const vpUi=()=>{document.querySelectorAll('.vm').forEach(el=>{const a=VOI.id==el.dataset.id?VOI.au:null,m=SUP.msgs.find(x=>x.id==el.dataset.id),d=m?.dur||0,ct=a?a.currentTime:0,pl=!!a&&!a.paused;
+ el.querySelector('.vplay').innerHTML=pl?PAUSE:PLAY;el.querySelector('.vbar i').style.width=(a&&d?Math.min(100,ct/d*100):0)+'%';el.querySelector('.vtm').textContent=fmtT(a?Math.min(ct,d||ct):d)})};
+const vPlay=id=>{
+ const m=SUP.msgs.find(x=>x.id==id);if(!m||!audOk(m.aud))return;
+ if(VOI.id==id&&VOI.au){VOI.au.paused?VOI.au.play().catch(()=>0):VOI.au.pause();vpUi();return}
+ if(VOI.au)VOI.au.pause();
+ const a=new Audio(m.aud);VOI.id=id;VOI.au=a;
+ a.ontimeupdate=a.onplay=a.onpause=vpUi;
+ a.onended=()=>{VOI.id=null;VOI.au=null;vpUi()};
+ a.onerror=()=>{VOI.id=null;VOI.au=null;vpUi();alert('تعذّر تشغيل الصوت')};
+ a.play().catch(()=>0);vpUi();
+};
+const recMime=()=>['audio/webm;codecs=opus','audio/mp4','audio/webm','audio/ogg;codecs=opus'].find(t=>window.MediaRecorder&&MediaRecorder.isTypeSupported&&MediaRecorder.isTypeSupported(t))||'';
+const cleanRec=()=>{clearInterval(REC.iv);REC.stream?.getTracks().forEach(t=>t.stop());REC.mr=null;REC.stream=null;document.querySelector('#sup .supp')?.classList.remove('recing')};
+const sendVoice=async(aud,dur)=>{
+ if(!SUP.uid)return;
+ const A=isA(),uid=SUP.uid,pr=A?S.sups[uid]:S.sup1;SUP.stick=1;
+ const meta={last:'🎤 رسالة صوتية',lastFrom:A?'a':'u',at:serverTimestamp()};
+ meta[A?'aRead':'uRead']=serverTimestamp();
+ if(!pr){const u=A?(S.users.find(x=>x.id==uid)||{}):{name:S.u.displayName||S.me?.name,email:S.u.email,photo:S.u.photoURL};Object.assign(meta,{uid,name:u.name||u.email||'طالب',email:u.email||'',photo:u.photo||''})}
+ const b=writeBatch(db);
+ b.set(doc(collection(db,'support',uid,'msgs')),{from:A?'a':'u',text:'',at:serverTimestamp(),aud,dur});
+ b.set(doc(db,'support',uid),meta,{merge:true});
+ try{await b.commit()}catch(x){alert('تعذّر إرسال الصوت: '+errMsg(x))}
+};
+const finishRec=async()=>{
+ const cancel=REC.cancel,chunks=REC.chunks,dur=Math.max(1,Math.min(REC_MAX,Math.round((Date.now()-REC.t0)/1000))),type=REC.mr?.mimeType||chunks[0]?.type||'audio/webm';
+ cleanRec();
+ if(cancel||!chunks.length)return;
+ const base=type.split(';')[0];
+ if(!/^audio\/(webm|mp4|ogg|aac|mpeg)$/.test(base))return alert('صيغة التسجيل في المتصفح ده مش مدعومة.');
+ const b64=await new Promise((ok,no)=>{const r=new FileReader();r.onload=()=>ok(String(r.result).split(',')[1]||'');r.onerror=no;r.readAsDataURL(new Blob(chunks,{type}))});
+ const url='data:'+base+';base64,'+b64;
+ if(url.length>700000)return alert('التسجيل حجمه كبير، سجّل رسالة أقصر.');
+ await sendVoice(url,dur);
+};
+const stopRec=cancel=>{if(!REC.mr)return;REC.cancel=cancel?1:0;try{REC.mr.state!='inactive'?REC.mr.stop():finishRec()}catch(e){finishRec()}};
+const startRec=async()=>{
+ if(REC.mr)return;
+ if(!navigator.mediaDevices?.getUserMedia||!window.MediaRecorder)return alert('المتصفح ده مش بيدعم تسجيل الصوت. جرّب كروم أو سفاري حديث.');
+ let st;try{st=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true}})}
+ catch(x){return alert('لازم تسمح للموقع بالميكروفون عشان تسجّل. اضغط على القفل جنب الرابط ← الأذونات ← الميكروفون.')}
+ const mt=recMime();let mr;
+ try{mr=new MediaRecorder(st,mt?{mimeType:mt,audioBitsPerSecond:24000}:{audioBitsPerSecond:24000})}
+ catch(e){try{mr=new MediaRecorder(st)}catch(x){st.getTracks().forEach(t=>t.stop());return alert('تعذّر بدء التسجيل')}}
+ if(!SUP.open){st.getTracks().forEach(t=>t.stop());return}
+ if(VOI.au)VOI.au.pause();
+ Object.assign(REC,{mr,chunks:[],stream:st,cancel:0,t0:Date.now()});
+ mr.ondataavailable=e=>{if(e.data&&e.data.size)REC.chunks.push(e.data)};
+ mr.onstop=finishRec;
+ mr.start(1000);
+ const t=$('#rec_t');if(t)t.textContent='0:00';
+ document.querySelector('#sup .supp')?.classList.add('recing');
+ REC.iv=setInterval(()=>{const n=Math.floor((Date.now()-REC.t0)/1000),e=$('#rec_t');if(e)e.textContent=fmtT(n);if(n>=REC_MAX)stopRec(false)},250);
+};
+const imgOk=v=>typeof v=='string'&&/^data:image\/jpeg;base64,/.test(v);
+const imgH=m=>m.img&&imgOk(m.img)?`<img class=simg src="${m.img}" alt="صورة" data-a=simgv>`:'';
+const shrinkChat=async f=>{
+ const u=URL.createObjectURL(f);
+ try{
+  const im=await new Promise((ok,no)=>{const i=new Image();i.onload=()=>ok(i);i.onerror=()=>no(new Error('الصورة دي مش بتفتح'));i.src=u});
+  const W=im.naturalWidth,H=im.naturalHeight;let mx=1000,q=.8;
+  for(let k=0;k<12;k++){
+   const sc=Math.min(1,mx/Math.max(W,H)),c=document.createElement('canvas');c.width=Math.max(1,Math.round(W*sc));c.height=Math.max(1,Math.round(H*sc));
+   const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height);
+   const out=c.toDataURL('image/jpeg',q);if(out.length<250000)return out;
+   if(q>.5)q-=.1;else mx=Math.round(mx*.8);
+  }
+  throw new Error('الصورة كبيرة قوي، جرّب صورة تانية');
+ }finally{URL.revokeObjectURL(u)}
+};
+const pvPaint=()=>{const e=$('#sup_pv');if(!e)return;if(!SUP.img){e.hidden=true;e.innerHTML='';return}e.hidden=false;e.innerHTML=`<img src="${SUP.img}" alt=""><span>الصورة جاهزة، تقدر تكتب تعليق وتبعت</span><button type=button data-a=pvx title="شيل الصورة">✕</button>`};
+const openImgV=src=>{if(!imgOk(src))return;const o=document.createElement('div');o.className='simv';o.innerHTML=`<img src="${src}" alt=""><button type=button class=simvx aria-label="إغلاق">✕</button>`;o.onclick=()=>o.remove();document.body.append(o)};
 const supN=()=>isA()?Object.values(S.sups||{}).filter(x=>x.lastFrom=='u'&&tm(x.at)>tm(x.aRead)).length:(S.sup1&&S.sup1.lastFrom=='a'&&tm(S.sup1.at)>tm(S.sup1.uRead)?1:0);
 const supBadge=()=>{const n=supN();document.querySelectorAll('.supb .bdg').forEach(b=>{b.hidden=!n;b.textContent=n>9?'9+':n||''})};
 const supSync=()=>{render();if(SUP.open){chatPaint();chatRead()}};
@@ -1455,7 +1573,7 @@ const bubbles=()=>{
   const t=tm(m.at)||Date.now(),dk=new Date(t).toDateString(),mine=m.from==me;
   if(dk!=pd){h+=`<div class=sday><span>${dayL(t)}</span></div>`;pd=dk;pf=''}
   const tk=mine?(m._p?'<i class=tk>🕓</i>':`<i class="tk${rd>=t?' sn':''}">✓✓</i>`):'';
-  h+=`<div class="sb ${mine?'me':'th'}${pf!=m.from?' fi':''}" dir=auto>${E(m.text)}<span class=tm>${hm(t)}${tk}</span></div>`;
+  h+=`<div class="sb ${mine?'me':'th'}${pf!=m.from?' fi':''}" dir=auto>${imgH(m)}${audH(m)}${E(m.text||'')}<span class=tm>${hm(t)}${tk}</span></div>`;
   pf=m.from;
  });
  return h||`<div class=semp>${isA()?'لسه مفيش رسايل. اكتب أول رسالة للطالب 👇':'اسأل أو ابعت أي مشكلة وهنرد عليك هنا 💬'}</div>`;
@@ -1463,7 +1581,7 @@ const bubbles=()=>{
 const chatPaint=()=>{
  const m=$('#sup_m');if(!m)return;
  const top=m.scrollTop,near=SUP.stick||!m.dataset.init||m.scrollHeight-top-m.clientHeight<140;
- SUP.stick=0;m.innerHTML=bubbles();m.dataset.init=1;m.scrollTop=near?m.scrollHeight:top;
+ SUP.stick=0;m.innerHTML=bubbles();m.dataset.init=1;m.scrollTop=near?m.scrollHeight:top;vpUi();
 };
 const chatRead=()=>{
  if(!SUP.open||document.hidden)return;
@@ -1486,29 +1604,29 @@ const fit=()=>{
 const openChat=uid=>{
  if(!uid)return;
  closeChat();
- SUP.open=1;SUP.uid=uid;SUP.msgs=[];SUP.rd=0;SUP.ld=1;SUP.stick=1;
+ SUP.open=1;SUP.uid=uid;SUP.msgs=[];SUP.rd=0;SUP.ld=1;SUP.stick=1;SUP.img=null;
  const A=isA(),d=A?(S.sups[uid]||S.users.find(x=>x.id==uid)||{}):{},p=safe(d.photo||'');
  const nm=A?(d.name||d.email||'طالب'):'الدعم',sub=A?(d.email||''):'اسأل أو ابعت مشكلتك وهنرد عليك',
   av=A?(p?`<img class=supav src="${E(p)}" referrerpolicy=no-referrer alt="">`:'<span class=supav>👤</span>'):'<span class=supav>🎧</span>';
  const w=document.createElement('div');w.id='sup';w.className='supw';w.dataset.a='supclose';
- w.innerHTML=`<div class=supp data-a=noop><div class=suph><button type=button data-a=supclose title="رجوع">→</button>${av}<div class=g><b>${E(nm)}</b><small dir=auto>${E(sub)}</small></div>${A?'<button type=button data-a=supdel title="مسح المحادثة">🗑</button>':''}</div><div class=supm id=sup_m></div><form class=supf id=sup_f autocomplete=off><textarea id=sup_in dir=auto rows=1 maxlength=2000 enterkeyhint=send placeholder="اكتب رسالة…"></textarea><button type=submit class=supsend title="إرسال"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 20.5 21 12 3 3.5l2.6 7.7L14 12l-8.4.8z"/></svg></button></form></div>`;
+ w.innerHTML=`<div class=supp data-a=noop><div class=suph><button type=button data-a=supclose title="رجوع">→</button>${av}<div class=g><b>${E(nm)}</b><small dir=auto>${E(sub)}</small></div>${A?'<button type=button data-a=supdel title="مسح المحادثة">🗑</button>':''}</div><div class=supm id=sup_m></div><div class=suppv id=sup_pv hidden></div><form class=supf id=sup_f autocomplete=off>${'<button type=button class=supatt data-a=supimg title="إرسال صورة" aria-label="إرسال صورة">'+IC.img+'</button><input type=file id=sup_fi accept="image/*" hidden><button type=button class="supatt supmic" data-a=supmic title="تسجيل صوت" aria-label="تسجيل صوت">'+IC.mic+'</button>'}<textarea id=sup_in dir=auto rows=1 maxlength=2000 enterkeyhint=send placeholder="اكتب رسالة…"></textarea><button type=submit class=supsend title="إرسال"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 20.5 21 12 3 3.5l2.6 7.7L14 12l-8.4.8z"/></svg></button></form>${'<div class=suprec id=sup_rec><button type=button class=recx data-a=recx title="إلغاء التسجيل">🗑</button><div class=recm><span class=recd></span><b id=rec_t>0:00</b><span class=recw><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></div><button type=button class=supsend data-a=recok title="إرسال"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 20.5 21 12 3 3.5l2.6 7.7L14 12l-8.4.8z"/></svg></button></div>'}</div>`;
  document.body.append(w);document.body.classList.add('sup-on');
  chatPaint();chatListen();fit();
  if(!matchMedia('(pointer:coarse)').matches)setTimeout(()=>$('#sup_in')?.focus(),250);
 };
-const closeChat=()=>{SUP.un&&SUP.un();SUP.un=null;SUP.open=0;SUP.uid=null;$('#sup')?.remove();document.body.classList.remove('sup-on')};
+const closeChat=()=>{if(REC.mr){REC.cancel=1;try{REC.mr.stop()}catch(e){cleanRec()}}if(VOI.au){VOI.au.pause();VOI.au=null;VOI.id=null}SUP.un&&SUP.un();SUP.un=null;SUP.open=0;SUP.uid=null;$('#sup')?.remove();document.body.classList.remove('sup-on')};
 const supSend=async()=>{
  const ta=$('#sup_in');if(!ta||!SUP.uid)return;
- const text=ta.value.trim().slice(0,2000);if(!text)return;
- const A=isA(),uid=SUP.uid,pr=A?S.sups[uid]:S.sup1;
- ta.value='';ta.style.height='';ta.focus();SUP.stick=1;
- const meta={last:text.slice(0,80),lastFrom:A?'a':'u',at:serverTimestamp()};
+ const A=isA(),img=SUP.img,text=ta.value.trim().slice(0,2000);if(!text&&!img)return;
+ const uid=SUP.uid,pr=A?S.sups[uid]:S.sup1;
+ ta.value='';ta.style.height='';SUP.img=null;pvPaint();ta.focus();SUP.stick=1;
+ const meta={last:(img?'📷 '+(text||'صورة'):text).slice(0,80),lastFrom:A?'a':'u',at:serverTimestamp()};
  meta[A?'aRead':'uRead']=serverTimestamp();
  if(!pr){const u=A?(S.users.find(x=>x.id==uid)||{}):{name:S.u.displayName||S.me?.name,email:S.u.email,photo:S.u.photoURL};Object.assign(meta,{uid,name:u.name||u.email||'طالب',email:u.email||'',photo:u.photo||''})}
  const b=writeBatch(db);
- b.set(doc(collection(db,'support',uid,'msgs')),{from:A?'a':'u',text,at:serverTimestamp()});
+ b.set(doc(collection(db,'support',uid,'msgs')),{from:A?'a':'u',text,at:serverTimestamp(),...(img?{img}:{})});
  b.set(doc(db,'support',uid),meta,{merge:true});
- try{await b.commit()}catch(x){ta.value=text;alert('تعذّر الإرسال: '+errMsg(x))}
+ try{await b.commit()}catch(x){ta.value=text;if(img){SUP.img=img;pvPaint()}alert('تعذّر الإرسال: '+errMsg(x))}
 };
 const delChat=async()=>{
  if(!isA()||!SUP.uid||!confirm('تمسح المحادثة دي كلها؟ مفيش رجوع.'))return;
@@ -1519,6 +1637,15 @@ const delChat=async()=>{
 window.visualViewport?.addEventListener('resize',fit);window.visualViewport?.addEventListener('scroll',fit);
 document.addEventListener('visibilitychange',chatRead);
 document.addEventListener('submit',e=>{if(e.target.id=='sup_f'){e.preventDefault();supSend()}});
+document.addEventListener('change',async e=>{
+ if(e.target.id!='sup_fi')return;
+ const f=e.target.files[0];e.target.value='';if(!f)return;
+ if(!f.type.startsWith('image/'))return alert('الملف لازم يكون صورة');
+ const bt=$('.supatt');if(bt)bt.disabled=true;
+ try{SUP.img=await shrinkChat(f);pvPaint()}catch(x){alert(x.message||'تعذّر تجهيز الصورة')}
+ finally{if(bt)bt.disabled=false}
+});
+document.addEventListener('keydown',e=>{if(e.key=='Escape')document.querySelector('.simv')?.remove()});
 document.addEventListener('input',e=>{if(e.target.id=='sup_in'){const t=e.target;t.style.height='auto';t.style.height=Math.min(t.scrollHeight,120)+'px'}});
 document.addEventListener('keydown',e=>{
  if(e.target.id=='sup_in'&&e.key=='Enter'&&!e.shiftKey&&!e.isComposing&&!matchMedia('(pointer:coarse)').matches){e.preventDefault();supSend()}
@@ -1572,6 +1699,13 @@ document.addEventListener('click',async e=>{
   else if(a=='aclose'){if(e.target.closest('.mbox')&&!e.target.closest('.mx'))return;S.am=0;render()}
   else if(a=='peek'){const i=$('#ap_');i.type=i.type=='password'?'text':'password';b.textContent=i.type=='password'?'إظهار':'إخفاء'}
   else if(a=='out')signOut(auth);
+  else if(a=='supimg')$('#sup_fi')?.click();
+  else if(a=='supmic')startRec();
+  else if(a=='recx')stopRec(true);
+  else if(a=='recok')stopRec(false);
+  else if(a=='vplay')vPlay(id);
+  else if(a=='pvx'){SUP.img=null;pvPaint()}
+  else if(a=='simgv')openImgV(b.getAttribute('src'));
   else if(a=='supopen'){if(isA()){S.adm=1;S.tab='at';render();scrollTo({top:0})}else openChat(S.u.uid)}
   else if(a=='chat')openChat(id);
   else if(a=='supclose')closeChat();
