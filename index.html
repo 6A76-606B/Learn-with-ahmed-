@@ -77,7 +77,8 @@ service cloud.firestore {
           && ((request.auth.uid==u && ok() && request.resource.data.from=='u') || (adm() && request.resource.data.from=='a'))
           && request.resource.data.text is string && request.resource.data.text.size()<=2000
           && (('img' in request.resource.data) || ('aud' in request.resource.data) || request.resource.data.text.size()>0);
-        allow delete: if adm();
+        allow update: if ((request.auth.uid==u && ok() && resource.data.from=='u') || (adm() && resource.data.from=='a')) && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['text','edited']);
+        allow delete: if adm() || (request.auth.uid==u && ok() && resource.data.from=='u');
       }
     }
     match /{c}/{i} {
@@ -596,6 +597,10 @@ body.sup-on{overflow:hidden}
 .sb.th{align-self:flex-end;background:var(--s3);color:var(--t);border-top-left-radius:4px}
 [data-theme=light] .sb.me{background:#d9fdd3;color:#0b2a1f}
 [data-theme=light] .sb.th{background:#fff}
+.sb .ma{display:flex;gap:4px;margin:0 0 3px;opacity:.7}
+.sb .ma button{min-height:0!important;width:28px;height:24px;padding:0!important;border-radius:8px!important;background:#00000026!important;color:inherit!important;font-size:13px;line-height:1}
+.sb .ma button:hover{opacity:1;background:#0004!important}
+.sb .ed{font-size:11px;opacity:.6;margin-inline-end:6px}
 .sb .tm{float:left;float:inline-end;display:inline-flex;align-items:center;gap:3px;margin:6px 10px -3px 0;margin-inline:10px 0;font-size:11px;opacity:.75;direction:ltr;white-space:nowrap}
 .tk{font-style:normal;letter-spacing:-5px;margin-inline-end:5px;font-size:12px}
 .tk.sn{color:#53bdeb;opacity:1}
@@ -1573,7 +1578,8 @@ const bubbles=()=>{
   const t=tm(m.at)||Date.now(),dk=new Date(t).toDateString(),mine=m.from==me;
   if(dk!=pd){h+=`<div class=sday><span>${dayL(t)}</span></div>`;pd=dk;pf=''}
   const tk=mine?(m._p?'<i class=tk>🕓</i>':`<i class="tk${rd>=t?' sn':''}">✓✓</i>`):'';
-  h+=`<div class="sb ${mine?'me':'th'}${pf!=m.from?' fi':''}" dir=auto>${imgH(m)}${audH(m)}${E(m.text||'')}<span class=tm>${hm(t)}${tk}</span></div>`;
+  const ac=!m._p&&(A||mine)?`<div class=ma dir=ltr>${mine&&!m.aud?`<button type=button data-a=medit data-id="${E(m.id)}" title="تعديل">✏️</button>`:''}<button type=button data-a=mdel data-id="${E(m.id)}" title="مسح">🗑</button></div>`:'';
+  h+=`<div class="sb ${mine?'me':'th'}${pf!=m.from?' fi':''}" dir=auto>${ac}${imgH(m)}${audH(m)}${E(m.text||'')}<span class=tm>${m.edited?'<span class=ed>معدّلة</span>':''}${hm(t)}${tk}</span></div>`;
   pf=m.from;
  });
  return h||`<div class=semp>${isA()?'لسه مفيش رسايل. اكتب أول رسالة للطالب 👇':'اسأل أو ابعت أي مشكلة وهنرد عليك هنا 💬'}</div>`;
@@ -1627,6 +1633,29 @@ const supSend=async()=>{
  b.set(doc(collection(db,'support',uid,'msgs')),{from:A?'a':'u',text,at:serverTimestamp(),...(img?{img}:{})});
  b.set(doc(db,'support',uid),meta,{merge:true});
  try{await b.commit()}catch(x){ta.value=text;if(img){SUP.img=img;pvPaint()}alert('تعذّر الإرسال: '+errMsg(x))}
+};
+const msgLab=m=>m?(m.aud?'🎤 رسالة صوتية':m.img?'📷 '+(m.text||'صورة'):(m.text||'')).slice(0,80)||'—':'—';
+const fixLast=async rest=>{
+ const A=isA(),pr=A?S.sups[SUP.uid]:S.sup1,l=rest[rest.length-1];
+ try{await updateDoc(doc(db,'support',SUP.uid),{last:!l?'تم مسح الرسائل':l.from==pr?.lastFrom?msgLab(l):'تم مسح رسالة'})}catch(e){}
+};
+const msgDel=async id=>{
+ if(!SUP.uid)return;
+ const A=isA(),i=SUP.msgs.findIndex(x=>x.id==id),m=SUP.msgs[i];
+ if(!m||(!A&&m.from!='u'))return;
+ if(!confirm('تمسح الرسالة دي؟'))return;
+ if(VOI.id==id&&VOI.au){VOI.au.pause();VOI.au=null;VOI.id=null}
+ try{await deleteDoc(doc(db,'support',SUP.uid,'msgs',id));if(i==SUP.msgs.length-1)await fixLast(SUP.msgs.slice(0,i))}
+ catch(x){alert('تعذّر المسح: '+errMsg(x))}
+};
+const msgEdit=async id=>{
+ const A=isA(),m=SUP.msgs.find(x=>x.id==id);if(!SUP.uid||!m||m.from!=(A?'a':'u')||m.aud)return;
+ let t=prompt('عدّل الرسالة:',m.text||'');if(t==null)return;t=t.trim().slice(0,2000);
+ if(!t&&!m.img)return alert('الرسالة مينفعش تبقى فاضية');
+ if(t==(m.text||''))return;
+ try{await updateDoc(doc(db,'support',SUP.uid,'msgs',id),{text:t,edited:serverTimestamp()});
+  if(SUP.msgs[SUP.msgs.length-1]?.id==id)await fixLast(SUP.msgs.map(x=>x.id==id?{...x,text:t}:x))}
+ catch(x){alert('تعذّر التعديل: '+errMsg(x))}
 };
 const delChat=async()=>{
  if(!isA()||!SUP.uid||!confirm('تمسح المحادثة دي كلها؟ مفيش رجوع.'))return;
@@ -1704,6 +1733,8 @@ document.addEventListener('click',async e=>{
   else if(a=='recx')stopRec(true);
   else if(a=='recok')stopRec(false);
   else if(a=='vplay')vPlay(id);
+  else if(a=='mdel')msgDel(id);
+  else if(a=='medit')msgEdit(id);
   else if(a=='pvx'){SUP.img=null;pvPaint()}
   else if(a=='simgv')openImgV(b.getAttribute('src'));
   else if(a=='supopen'){if(isA()){S.adm=1;S.tab='at';render();scrollTo({top:0})}else openChat(S.u.uid)}
