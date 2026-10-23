@@ -645,6 +645,11 @@ body.sup-on{overflow:hidden}
 .ffoot{text-align:center;color:var(--m);font-size:13px;margin-top:16px;animation:rise .7s var(--ease) .55s both}
 @media(max-width:380px){#app button.fol .fl{display:none}#app button.fol{width:42px;padding:0!important}.fgo span{display:none}.fgo{padding:8px}}
 @media(prefers-reduced-motion:reduce){#app button.fol,#app button.fol svg,#app button.fol::before,.fburst,.fbox::before{animation:none!important}}
+/* موبايل: هيدر مضبوط */
+header button{white-space:nowrap;flex:none}
+@media(max-width:430px){header .hl{display:none}header .y.sm{width:42px;padding:0!important}header .fol .fl{display:none}#app header button.fol{width:42px;padding:0!important}}
+@media(max-width:400px){.fbox{padding:22px 12px 16px;border-radius:24px}.fhead h2{font-size:21px}.fc{padding:12px;gap:10px}.fi{width:46px;height:46px;border-radius:14px}.fi svg{width:24px;height:24px}.ftx small{font-size:12px;white-space:normal;word-break:break-all}.fgo span{display:none}.fgo{padding:8px}}
+.fbox:focus{outline:0}
 </style>
 </head>
 <body>
@@ -759,7 +764,7 @@ const dn=id=>!!S.prog.done?.[id];
 const saveP=async d=>{try{await setDoc(doc(db,'progress',S.u.uid),{...d,at:serverTimestamp()},{merge:true})}catch(x){alert('تعذّر حفظ التقدّم: '+errMsg(x))}};
 
 const supBtn=()=>{const n=supN();return `<button class="s ico supb" data-a=supopen title="الدعم">${IC.chat}<b class=bdg${n?'':' hidden'}>${n>9?'9+':n||''}</b></button>`};
-const head=()=>`<header class="${isA()?'ha':''}">${brand()}${isA()?`<button class="y sm" data-a=adm>${S.adm?'👁 عرض كطالب':'⚙️ لوحة التحكم'}</button>`:''}${folBtn("s sm")}${supBtn()}${thm()}${S.u.photoURL?`<img class="av hide-s" src="${E(S.u.photoURL)}" referrerpolicy=no-referrer alt="">`:''}<button class="s sm" data-a=out>خروج</button></header>`;
+const head=()=>`<header class="${isA()?'ha':''}">${brand()}${isA()?`<button class="y sm" data-a=adm title="${S.adm?'عرض كطالب':'لوحة التحكم'}">${S.adm?'👁<span class=hl> عرض كطالب</span>':'⚙️<span class=hl> لوحة التحكم</span>'}</button>`:''}${folBtn("s sm")}${supBtn()}${thm()}${S.u.photoURL?`<img class="av hide-s" src="${E(S.u.photoURL)}" referrerpolicy=no-referrer alt="">`:''}<button class="s sm" data-a=out>خروج</button></header>`;
 
 const stuTabs=()=>{const c=cfg(),A=isA();return [['v','🎬 الدروس'],(c.files||A)&&['f','📎 الملفات'],(c.quiz||A)&&['q','📝 الاختبار'],(c.editor||A)&&['e','💻 المحرر']].filter(Boolean)};
 const stu=()=>{
@@ -872,7 +877,7 @@ const openFollow=()=>{
  o.addEventListener('click',e=>{if(e.target===o||e.target.closest('.fx'))close()});
  o.addEventListener('pointermove',e=>{const c=e.target.closest?.('.fc');if(!c)return;const r=c.getBoundingClientRect();c.style.setProperty('--mx',(e.clientX-r.left)+'px');c.style.setProperty('--my',(e.clientY-r.top)+'px')});
  document.body.appendChild(o);
- o.querySelector('.fx').focus({preventScroll:true});
+ {const bx=o.querySelector('.fbox');bx.tabIndex=-1;bx.focus({preventScroll:true})}
 };
 
 /* ===== صفحة الدخول ===== */
@@ -1663,8 +1668,9 @@ onAuthStateChanged(auth,async u=>{
  const A=low(u)===AD;S.wantA=0;
  Object.assign(S,{ready:1,u,me:null,adm:A?1:0,tab:A?'ao':'v',cur:null,eq:null,err:'',am:0,content:[],qs:[],users:[],prog:{},allProg:{},live:{},runs:[],settings:{},pl:0,ans:{},done:0,sel:null,sup1:null,sups:{}});
  if(!u)return render();
- const r=doc(db,'users',u.uid);
+ const r=doc(db,'users',u.uid);let mk=0;
  un.push(onSnapshot(r,s=>{
+  if(!s.exists()&&!A&&!mk){mk=1;setDoc(r,{name:(u.displayName||'').slice(0,200),email:u.email||'',photo:(u.photoURL||'').slice(0,2000),banned:false,at:serverTimestamp()}).catch(()=>{})}
   S.me=s.exists()?s.data():{banned:false};
   feed();
   render();
