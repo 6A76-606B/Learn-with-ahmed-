@@ -2615,7 +2615,7 @@ document.addEventListener('click',async e=>{
   else if(a=='out'){if(isA()&&!isS()&&admSid)deleteDoc(doc(db,'asess',admSid)).catch(()=>0);signOut(auth)}
   else if(a=='secopen'){secOpen(id)}
   else if(a=='asecopen'){secOpen(id,'asecret')}
-  else if(a=='secme'){secOpen(S.u.uid)}
+  else if(a=='secme'){isA()?secOpen(mySid(),'asecret'):secOpen(S.u.uid)}
   else if(a=='admdel'){await admDel(id)}
   else if(a=='kickone'){await admKickOne(id)}
   else if(a=='admban'){await admBan(id)}
