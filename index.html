@@ -4,6 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#07090e">
+<meta name="application-name" content="Code with me">
+<meta name="apple-mobile-web-app-title" content="Code with me">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -583,6 +588,42 @@ li.CodeMirror-hint-active{background:var(--a);color:#fff}
 .pdc{background:var(--chip);color:var(--t)}
 .pdd{background:var(--r);color:#fff;border-color:var(--r)!important}
 .pdd:disabled,.pdc:disabled{opacity:.4;cursor:not-allowed}
+
+/* محادثة المحظورين */
+.apw{position:fixed;inset:0;z-index:250;display:grid;place-items:center;padding:18px;background:#05070bb3;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);animation:fadeIn .25s both}
+.apw.out{opacity:0;transition:opacity .22s}
+.apb{width:100%;max-width:440px;height:min(680px,100%);display:flex;flex-direction:column;background:var(--s1);color:var(--t);border:1px solid var(--ln2);border-radius:22px;overflow:hidden;box-shadow:0 40px 80px -30px #000;animation:mIn .45s var(--spring) both}
+.aph{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--s2);border-bottom:1px solid var(--ln);flex:none}
+.aph .g{flex:1;min-width:0}
+.aph .g b{display:block;font:700 15px var(--disp);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.aph .g small{display:block;color:var(--m);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.aph button{width:40px;height:40px;min-height:40px;padding:0;background:transparent;border:0;border-radius:10px;color:var(--t);font-size:18px;cursor:pointer}
+.aph button:hover{background:var(--chip)}
+.apm{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:14px 12px;display:flex;flex-direction:column;gap:3px;background-color:var(--s2);background-image:radial-gradient(var(--ln2) 1px,transparent 1.6px);background-size:22px 22px}
+.apm .sb{cursor:default}
+.apf{display:flex;align-items:flex-end;gap:8px;padding:8px 10px;padding-bottom:calc(8px + env(safe-area-inset-bottom));background:var(--s2);border-top:1px solid var(--ln);flex:none}
+.apf textarea{flex:1;min-width:0;min-height:46px;height:46px;max-height:120px;resize:none;margin:0;padding:11px 16px;border-radius:23px;font-size:16px;line-height:1.5}
+.apsend{flex:none;width:46px;height:46px;padding:0;border:0;border-radius:50%;background:#00a884;color:#fff;display:grid;place-items:center;cursor:pointer;transition:transform .2s var(--spring),opacity .2s}
+.apsend:active{transform:scale(.9)}
+.apsend:disabled{opacity:.5}
+.apsend svg{width:21px;height:21px;transform:scaleX(-1)}
+@media(max-width:640px){.apw{padding:0;align-items:start}.apb{max-width:none;height:100dvh;border-radius:0;border:0}.aph{padding-top:calc(10px + env(safe-area-inset-top))}}
+.apbdg{display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 5px;margin-inline-start:6px;border-radius:99px;background:var(--r);color:#fff;font:700 11px var(--mono);animation:pop .4s var(--spring)}
+
+/* بانر تثبيت التطبيق */
+.pwab{position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom));z-index:180;display:flex;align-items:center;gap:12px;width:min(calc(100% - 24px),440px);padding:10px 10px 10px 12px;border-radius:20px;background:var(--s1);color:var(--t);border:1px solid var(--ln2);box-shadow:0 20px 50px -16px #000b;opacity:0;transform:translate(-50%,30px) scale(.95);transition:opacity .25s,transform .5s var(--spring)}
+.pwab.on{opacity:1;transform:translate(-50%,0) scale(1)}
+.pwab img{width:44px;height:44px;border-radius:12px;flex:none}
+.pwab .g{flex:1;min-width:0}
+.pwab .g b{display:block;font-size:14.5px}
+.pwab .g small{display:block;color:var(--m);font-size:12px;line-height:1.5}
+.pwab .pwai{flex:none;height:38px;padding:0 16px;border:0;border-radius:12px;background:var(--y);color:#17140a;font-weight:700;font-size:14px;font-family:inherit;cursor:pointer;transition:transform .2s var(--spring)}
+.pwab .pwai:active{transform:scale(.93)}
+.pwab .pwax{flex:none;width:34px;height:34px;padding:0;border:0;border-radius:10px;background:transparent;color:var(--m);font-size:16px;cursor:pointer}
+.pwab .pwax:hover{background:var(--chip)}
+
+.pwabtn svg{width:20px;height:20px}
+.pwal svg{width:20px;height:20px;margin-inline-end:6px;vertical-align:-4px}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 .fv{position:relative;margin-top:12px;border-radius:12px;overflow:hidden;background:var(--chip);aspect-ratio:4/3;max-height:75vh}
 .fv iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
@@ -976,7 +1017,7 @@ const dn=id=>!!S.prog.done?.[id];
 const saveP=async d=>{try{await setDoc(doc(db,'progress',S.u.uid),{...d,at:serverTimestamp()},{merge:true})}catch(x){alert('تعذّر حفظ التقدّم: '+errMsg(x))}};
 
 const supBtn=()=>{const n=supN(),on=isA()&&S.adm&&S.tab=='ai';return `<button class="${on?'y':'s'} ico supb" data-a=supopen title="${isA()?'المحادثات':'الدعم'}">${IC.chat}<b class=bdg${n?'':' hidden'}>${n>9?'9+':n||''}</b></button>`};
-const head=()=>`<header class="${isA()?'ha':''}">${brand()}${isA()?`<button class="y sm" data-a=adm title="${S.adm?'عرض كطالب':'لوحة التحكم'}">${S.adm?'👁<span class=hl> عرض كطالب</span>':'⚙️<span class=hl> لوحة التحكم</span>'}</button>`:''}${folBtn("s sm")}${supBtn()}${thm()}${isA()?(S.u.photoURL?`<img class="av hide-s" src="${E(S.u.photoURL)}" referrerpolicy=no-referrer alt="">`:'')+'<button class="s sm" data-a=out>خروج</button>':pavBtn()}</header>`;
+const head=()=>`<header class="${isA()?'ha':''}">${brand()}${isA()?`<button class="y sm" data-a=adm title="${S.adm?'عرض كطالب':'لوحة التحكم'}">${S.adm?'👁<span class=hl> عرض كطالب</span>':'⚙️<span class=hl> لوحة التحكم</span>'}</button>`:''}${folBtn("s sm")}${supBtn()}${pwaBtn()}${thm()}${isA()?(S.u.photoURL?`<img class="av hide-s" src="${E(S.u.photoURL)}" referrerpolicy=no-referrer alt="">`:'')+'<button class="s sm" data-a=out>خروج</button>':pavBtn()}</header>`;
 const pavBtn=()=>{const p=safe(S.me?.photo||S.u.photoURL||'');return `<button type=button class=pav data-a=pmenu title="حسابي" aria-label="حسابي" aria-haspopup=menu>${p?`<img src="${E(p)}" referrerpolicy=no-referrer alt="">`:'<span>👤</span>'}</button>`};
 
 const stuTabs=()=>{const c=cfg(),A=isA();return [['v','🎬 الدروس'],(c.files||A)&&['f','📎 الملفات'],(c.quiz||A)&&['q','📝 الاختبار'],(c.editor||A)&&['e','💻 المحرر']].filter(Boolean)};
@@ -1016,10 +1057,10 @@ const sCard=(i,n,t)=>`<div class="card stat"><span class=si>${i}</span><b data-c
 const codev=(code,out)=>`<div class=codev><div class=hd><span>CODE</span><span>OUTPUT</span></div><pre class=tok>${hl(code||'')}</pre><pre>${E(out||'')||'<span style="opacity:.5">— مفيش ناتج —</span>'}</pre></div>`;
 const runTag=r=>r.ok?'<span class="tag okt">✓ صح</span>':`<span class="tag ert">✕ خطأ${r.line?' · سطر '+r.line:''}</span>`;
 /* قايمة الأدمن: زرار ☰ بيفتح الأقسام تحت بعض */
-const ANAV=[['av','🎬 الفيديوهات'],['af','📎 الملفات'],['ao','📊 نظرة عامة'],['as','👥 الطلاب'],['ae','💻 نشاط المحرر'],['aq','❓ الأسئلة'],['at','📢 رسايل جماعية'],['ag','⚙️ الإعدادات']];
+const ANAV=[['ao','📊 نظرة عامة'],['av','🎬 الفيديوهات'],['af','📎 الملفات'],['as','👥 الطلاب'],['ae','💻 نشاط المحرر'],['aq','❓ الأسئلة'],['at','📢 رسايل جماعية'],['ab','🚫 الحسابات المحظورة'],['ag','⚙️ الإعدادات']];
 const anav=()=>{
  const cur=(ANAV.find(t=>t[0]==S.tab)||(S.tab=='ai'?['ai','💬 المحادثات']:ANAV[0]))[1];
- return `<nav class="anav${S.nav?' open':''}"><button type=button class="s anbtn" data-a=navtog aria-expanded="${S.nav?'true':'false'}" aria-controls=anl><span class=hbg aria-hidden=true><i></i><i></i><i></i></span><span class=tt>${cur}</span><svg class=chv viewBox="0 0 24 24" fill=none stroke=currentColor stroke-width=2.5 stroke-linecap=round stroke-linejoin=round aria-hidden=true><path d="m6 9 6 6 6-6"/></svg></button><div class=anlist id=anl><div>${ANAV.map(([k,t])=>`<button type=button class="${S.tab==k?'on':'s'}" data-a=tab data-id=${k}>${t}</button>`).join('')}</div></div></nav>`};
+ return `<nav class="anav${S.nav?' open':''}"><button type=button class="s anbtn" data-a=navtog aria-expanded="${S.nav?'true':'false'}" aria-controls=anl><span class=hbg aria-hidden=true><i></i><i></i><i></i></span><span class=tt>${cur}</span><svg class=chv viewBox="0 0 24 24" fill=none stroke=currentColor stroke-width=2.5 stroke-linecap=round stroke-linejoin=round aria-hidden=true><path d="m6 9 6 6 6-6"/></svg>${apN()&&S.tab!='ab'?`<b class=apbdg>${apN()}</b>`:''}</button><div class=anlist id=anl><div>${ANAV.map(([k,t])=>`<button type=button class="${S.tab==k?'on':'s'}" data-a=tab data-id=${k}>${t}${k=='ab'&&apN()?`<b class=apbdg>${apN()}</b>`:''}</button>`).join('')}</div></div></nav>`};
 const navPaint=()=>{const e=document.querySelector('.anav');if(!e)return;e.classList.toggle('open',!!S.nav);e.querySelector('.anbtn')?.setAttribute('aria-expanded',S.nav?'true':'false')};
 const admin=()=>{
  const U=S.users.filter(notA),L=lessons();
@@ -1074,6 +1115,10 @@ const admin=()=>{
   const e=S.qs.find(x=>x.id==S.eq),v=e||{q:'',o:['','','',''],a:0};
   h+=`<div class=card data-keep="aq-${E(e?e.id:'new')}"><h3>${e?'✏️ تعديل السؤال':'➕ سؤال جديد'}</h3><input id=qq placeholder="نص السؤال" value="${E(v.q)}">${[0,1,2,3].map(i=>`<input id=o${i} placeholder="الاختيار ${i+1}" value="${E((v.o||[])[i]||'')}">`).join('')}<select id=qa>${[0,1,2,3].map(i=>`<option value=${i}${v.a==i?' selected':''}>الإجابة الصح: ${i+1}</option>`).join('')}</select><div class=row style="margin-top:8px"><button class=y data-a=addq>${e?'حفظ التعديل':'إضافة السؤال'}</button>${e?'<button class=s data-a=cancelq>إلغاء</button>':''}</div></div>`
    +`<div data-live>${S.qs.map((q,n)=>`<div class="card row wr"><span class=g><span class=qn>${n+1}</span>${E(q.q)}</span>${sm('qu',q.id,'↑','s',!n)}${sm('qd',q.id,'↓','s',n==S.qs.length-1)}${sm('editq',q.id,'✏️')}${sm('delq',q.id,'حذف','r')}</div>`).join('')||empty('لسه مفيش أسئلة.','❓')}</div>`;
+}else if(S.tab=='ab'){
+  const B=U.filter(u=>u.banned).map(u=>({u,a:(S.apps||{})[u.id]})).sort((x,y)=>(tm(y.a?.at)||ms(y.u))-(tm(x.a?.at)||ms(x.u)));
+  h+=`<p class=m style="margin:0 2px 10px">الحسابات اللي اتحظرت ورسايلها ليك. اضغط على 💬 المحادثة عشان تقرأ وتردّ، أو فك الحظر.</p><div data-live>`
+   +(B.map(({u,a})=>{const nw=a&&a.lastFrom=='u'&&tm(a.at)>tm(a.aRead);return `<div class="card row wr">${u.photo?`<img class=av src="${E(u.photo)}" referrerpolicy=no-referrer alt="">`:'<span class=av style="display:grid;place-items:center">👤</span>'}<span class=g><b>${E(u.name||u.email)}</b>${nw?' <span class="tag ert">جديد</span>':''}<small class=m dir=auto style="display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${a?(a.lastFrom=='a'?'أنت: ':'')+E(a.last||''):'لسه ماكتبش رسالة'}</small>${a?`<small class=m>${rel(tm(a.at))}</small>`:''}</span>${sm('apadm',u.id,'💬 المحادثة')}${sm('ban',u.id,'فك الحظر')}</div>`}).join('')||empty('مفيش حسابات محظورة دلوقتي.','✅'))+`</div>`;
  }else{
   const c=cfg();
   h+=`<div class=card data-keep=ag><h3>⚙️ إعدادات الموقع</h3><label class=lb>اسم الموقع</label><input id=sn_ value="${E(c.name)}"><label class=lb>إعلان يظهر للطلاب فوق (سيبه فاضي لو مش عايز)</label><textarea id=sa_ placeholder="مثلاً: درس جديد نازل بكرة الساعة 8">${E(c.ann)}</textarea>`
@@ -1115,7 +1160,7 @@ const openFollow=()=>{
 const login=()=>`<div class=land><div class=ltop>${brand()}${folBtn()}${thm()}<button class="s admbtn" data-a=aopen>${IC.shield}<span>دخول كأدمن</span></button></div>
 <div class=lmain>
  ${inApp?'<div class="card warn">⚠️ شكلك فاتح اللينك من جوه تطبيق (فيسبوك/إنستجرام…). جوجل بتمنع تسجيل الدخول من المتصفح الداخلي، افتح اللينك في كروم أو سفاري (من القايمة ⋮ ← فتح في المتصفح).</div>':''}
- <div class=gwrap><button class="y gbtn" data-a=login>${IC.g} تسجيل الدخول بجوجل</button></div>
+ <div class=gwrap><button class="y gbtn" data-a=login>${IC.g} تسجيل الدخول بجوجل</button></div>${standalone()?'':`<div style="margin-top:12px"><button class="s gbtn pwal" data-a=pwa style="width:100%">${PWAI} حمّل كتطبيق</button></div>`}
  <div class=lcode><div class=cw><div class=cwt><i></i><i></i><i></i><span>main.py</span></div><div class=cwb><div><small>code</small><pre id=typer></pre></div><div><small>output</small><pre id=tyout></pre></div></div></div></div>
 </div></div>
 ${S.am?`<div class=modal data-a=aclose><form class=mbox id=af data-a=noop><button type=button class="gh sm ico mx" data-a=aclose title="إغلاق">✕</button><div class=mi>${IC.shield}</div><h2>دخول الأدمن</h2><p class=m>بالإيميل وكلمة المرور المسجّلين في Firebase</p>
@@ -1172,7 +1217,7 @@ const openPM=btn=>{
  const nm=S.me?.name||S.u.displayName||'طالب',em=S.u.email||'',ph=safe(S.me?.photo||S.u.photoURL||'');
  const d=document.createElement('div');d.className='pmenu';d.setAttribute('role','menu');
  d.innerHTML=`<div class=pmh>${ph?`<img src="${E(ph)}" referrerpolicy=no-referrer alt="">`:'<span>👤</span>'}<div><b dir=auto>${E(nm)}</b><small dir=ltr>${E(em)}</small></div></div>`
-  +`<button type=button role=menuitem data-p=name>✏️ تعديل الاسم</button><button type=button role=menuitem data-p=photo>📷 تغيير الصورة</button><button type=button role=menuitem data-p=out>🚪 تسجيل خروج</button><button type=button role=menuitem class=dng data-p=del>🗑 حذف الحساب</button>`;
+  +`<button type=button role=menuitem data-p=name>✏️ تعديل الاسم</button><button type=button role=menuitem data-p=photo>📷 تغيير الصورة</button>${standalone()?'':'<button type=button role=menuitem data-p=pwa>📲 حمّل كتطبيق</button>'}<button type=button role=menuitem data-p=out>🚪 تسجيل خروج</button><button type=button role=menuitem class=dng data-p=del>🗑 حذف الحساب</button>`;
  document.body.append(d);
  const r=btn.getBoundingClientRect(),w=d.offsetWidth;
  d.style.top=(r.bottom+8)+'px';d.style.left=Math.max(8,Math.min(r.left,innerWidth-w-8))+'px';
@@ -1181,6 +1226,7 @@ const openPM=btn=>{
   const b=e.target.closest('[data-p]');if(!b)return;const k=b.dataset.p;closePM();
   if(k=='name'){S.editProf=1;S.pfKey='';render();setTimeout(()=>{const i=$('#onb_nm');if(i){i.focus();i.select()}},120)}
   else if(k=='photo'){S.editProf=1;S.pfKey='';render();setTimeout(()=>$('#onb_fi')?.click(),60)}
+  else if(k=='pwa'){pwaHide(1);pwaClick()}
   else if(k=='out')signOut(auth);
   else if(k=='del')openDel();
  };
@@ -1233,12 +1279,95 @@ const openDel=()=>{
  };
  setTimeout(()=>inp.focus(),120);
 };
+
+/* ===== المحظورين: محادثة الطالب المحظور مع الأدمن (appeals) ===== */
+const apN=()=>isA()?Object.values(S.apps||{}).filter(x=>x.lastFrom=='u'&&tm(x.at)>tm(x.aRead)&&(S.users||[]).some(u=>u.id==x.id&&u.banned)).length:(S.ap1&&S.ap1.lastFrom=='a'&&tm(S.ap1.at)>tm(S.ap1.uRead)?1:0);
+let apUn=null,apFor='';
+const apSub=()=>{
+ const want=S.me?.banned&&S.u&&!isA()?S.u.uid:'';
+ if(want===apFor)return;
+ apUn&&apUn();apUn=null;apFor=want;S.ap1=null;
+ if(!want)return;
+ apUn=onSnapshot(doc(db,'appeals',want),s=>{S.ap1=s.exists()?s.data({serverTimestamps:'estimate'}):null;render()},()=>0);
+ un.push(()=>{apUn&&apUn();apUn=null;apFor=''});
+};
+let apOpen=0;
+const openAppeal=(uid,adm)=>{
+ if(apOpen)return;apOpen=1;
+ const U=adm?(S.users.find(x=>x.id==uid)||{}):{name:S.me?.name||S.u.displayName||'',email:S.u.email||''};
+ const nm=U.name||U.email||'طالب',me=adm?'a':'u';
+ const o=document.createElement('div');o.className='apw';
+ o.innerHTML=`<div class=apb role=dialog aria-modal=true><div class=aph><div class=g><b dir=auto>${adm?E(nm):'كلّم الأدمن'}</b><small dir=auto>${adm?E(U.email||''):'حسابك موقوف — اكتب للأدمن وهيرد عليك هنا'}</small></div>${adm?'<button type=button class=apun title="فك الحظر">🔓</button>':''}<button type=button class=apx aria-label="إغلاق">✕</button></div><div class=apm></div><form class=apf autocomplete=off><textarea rows=1 maxlength=1000 dir=auto enterkeyhint=send placeholder="اكتب رسالة…"></textarea><button type=submit class=apsend aria-label="إرسال"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 20.5 21 12 3 3.5l2.6 7.7L14 12l-8.4.8z"/></svg></button></form></div>`;
+ const prev=document.body.style.overflow;document.body.style.overflow='hidden';document.body.append(o);
+ const box=o.querySelector('.apm'),ta=o.querySelector('textarea'),fm=o.querySelector('form'),sd=o.querySelector('.apsend');
+ let msgs=[],lastMark='',sending=0;
+ const paint=()=>{
+  const near=!box.dataset.i||box.scrollHeight-box.scrollTop-box.clientHeight<140;
+  let h='',pd='';
+  msgs.forEach(m=>{const t=tm(m.at)||Date.now(),dk=new Date(t).toDateString();if(dk!=pd){h+=`<div class=sday><span>${dayL(t)}</span></div>`;pd=dk}
+   h+=`<div class="sb ${m.from==me?'me':'th'}" dir=auto>${E(m.text||'')}<span class=tm>${hm(t)}</span></div>`});
+  box.innerHTML=h||`<div class=semp>${adm?'مفيش رسايل من الطالب لسه.':'اشرح للأدمن ليه شايف إن الحظر ده بالغلط 💬'}</div>`;
+  box.dataset.i=1;if(near)box.scrollTop=box.scrollHeight;
+ };
+ const mark=()=>{const l=msgs[msgs.length-1];if(!l||l.from==me||lastMark==l.id)return;lastMark=l.id;updateDoc(doc(db,'appeals',uid),adm?{aRead:serverTimestamp()}:{uRead:serverTimestamp()}).catch(()=>0)};
+ const unsub=onSnapshot(query(collection(db,'appeals',uid,'msgs'),orderBy('at','asc'),limit(300)),s=>{msgs=s.docs.map(d=>({id:d.id,...d.data({serverTimestamps:'estimate'})}));paint();mark()},()=>{box.innerHTML='<div class=semp>تعذّر تحميل الرسايل</div>'});
+ const fit=()=>{ta.style.height='auto';ta.style.height=Math.min(ta.scrollHeight,120)+'px'};
+ ta.oninput=fit;
+ ta.onkeydown=e=>{if(e.key=='Enter'&&!e.shiftKey&&!coarse){e.preventDefault();fm.requestSubmit()}};
+ fm.onsubmit=async e=>{
+  e.preventDefault();const t=ta.value.trim();if(!t||sending)return;sending=1;sd.disabled=true;
+  try{
+   const b=writeBatch(db);
+   b.set(doc(db,'appeals',uid),{uid,name:(U.name||'').slice(0,200),email:U.email||'',last:t.slice(0,80),lastFrom:me,at:serverTimestamp()},{merge:true});
+   b.set(doc(collection(db,'appeals',uid,'msgs')),{from:me,text:t,at:serverTimestamp()});
+   await b.commit();ta.value='';fit();
+  }catch(x){alert('تعذّر الإرسال: '+errMsg(x))}
+  finally{sending=0;sd.disabled=false;ta.focus()}
+ };
+ const kd=e=>{if(e.key=='Escape'){e.stopPropagation();close()}};
+ const close=()=>{if(!apOpen)return;apOpen=0;unsub();document.removeEventListener('keydown',kd,true);document.body.style.overflow=prev;o.classList.add('out');setTimeout(()=>o.remove(),220)};
+ document.addEventListener('keydown',kd,true);
+ o.onclick=e=>{if(e.target===o||e.target.closest('.apx'))close()};
+ const ub=o.querySelector('.apun');
+ if(ub)ub.onclick=async()=>{if(!confirm('تفك الحظر عن '+nm+'؟'))return;try{await updateDoc(doc(db,'users',uid),{banned:false});close();gToast('✓ اتفك الحظر')}catch(x){alert('حصل خطأ: '+errMsg(x))}};
+ setTimeout(()=>{if(!coarse)ta.focus()},150);
+};
+
+/* ===== تثبيت المنصة كتطبيق (Code with me) ===== */
+let dip=null,pwaT=0,pwaEl=null;
+const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+const isIOS=()=>/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+const canInstall=()=>!standalone()&&(!!dip||isIOS());
+const pwaGone=()=>{try{return Date.now()-(+localStorage.getItem('pwa-x')||0)<6048e5}catch(x){return 0}};
+const pwaHide=(keep)=>{if(!pwaEl)return;const e=pwaEl;pwaEl=null;e.classList.remove('on');setTimeout(()=>e.remove(),300);if(!keep)try{localStorage.setItem('pwa-x',Date.now())}catch(x){}};
+const pwaInstall=async()=>{
+ if(dip){const e=dip;dip=null;try{e.prompt();const r=await e.userChoice;if(r.outcome=='accepted')gToast('✓ جاري تثبيت التطبيق')}catch(x){}pwaHide(1);return}
+ if(isIOS()){alert('عشان تثبّت التطبيق على الأيفون:\n1) اضغط زرار المشاركة ⬆️ في سفاري\n2) اختار «إضافة إلى الشاشة الرئيسية»\n3) اضغط «إضافة»')}
+};
+const PWAI='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m0 0-4-4m4 4 4-4"/><path d="M5 19h14"/></svg>';
+const pwaBtn=()=>standalone()?'':`<button type=button class="s ico pwabtn" data-a=pwa title="حمّل كتطبيق" aria-label="حمّل كتطبيق">${PWAI}</button>`;
+const pwaClick=async()=>{
+ if(standalone()){gToast('التطبيق متثبّت بالفعل');return}
+ if(dip||isIOS()){await pwaInstall();return}
+ alert('عشان تحمّل التطبيق:\n1) افتح قايمة المتصفح ⋮\n2) اختار «تثبيت التطبيق» أو «إضافة إلى الشاشة الرئيسية»\n3) اضغط «تثبيت»\n\nلو الخيار مش ظاهر، افتح الموقع في كروم.');
+};
+const pwaShow=()=>{
+ if(pwaEl||!canInstall()||pwaGone()||!S.u||S.deleting||document.querySelector('.apw,.pdl'))return;
+ const o=document.createElement('div');o.className='pwab';o.setAttribute('role','dialog');o.setAttribute('aria-label','تثبيت التطبيق');
+ o.innerHTML=`<img src="icon-192.png" alt="" width=44 height=44><div class=g><b>ثبّت Code with me كتطبيق</b><small>${dip?'يفتح بسرعة من الشاشة الرئيسية من غير متصفح':'من المشاركة ⬆️ ← إضافة إلى الشاشة الرئيسية'}</small></div><button type=button class=pwai>${dip?'تثبيت':'إزاي؟'}</button><button type=button class=pwax aria-label="إغلاق">✕</button>`;
+ document.body.append(o);pwaEl=o;requestAnimationFrame(()=>o.classList.add('on'));
+ o.querySelector('.pwai').onclick=pwaInstall;o.querySelector('.pwax').onclick=()=>pwaHide();
+};
+const pwaMaybe=()=>{if(pwaT||pwaEl||!S.u||!S.ready||!canInstall()||pwaGone())return;pwaT=setTimeout(()=>{pwaT=0;pwaShow()},3500)};
+addEventListener('beforeinstallprompt',e=>{e.preventDefault();dip=e;pwaMaybe()});
+addEventListener('appinstalled',()=>{dip=null;pwaHide(1);gToast('✓ تم تثبيت التطبيق')});
+if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol))addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>0));
 const view=()=>!S.ready?spin
  :!S.u?login()
  :S.deleting?'<div class="hero rv"><div class=ic>🗑</div><h1>جاري حذف حسابك…</h1><p class=m>استنى لحظات وماتقفلش الصفحة.</p></div>'
  :S.err&&!S.me?.banned?`<div class="hero rv"><div class=ic>⚠️</div><h1>حصلت مشكلة</h1><p class=m style="margin:8px 0 18px">${E(S.err)}</p><button class=s data-a=out>خروج</button></div>`
  :!S.me?spin
- :S.me.banned?'<div class="hero rv"><div class=ic>🔒</div><h1>تم إيقاف حسابك</h1><p class=m style="margin:8px 0 18px">تواصل مع الأدمن لو شايف إن ده بالغلط.</p><button class=s data-a=out>خروج</button></div>'
+ :S.me.banned?`<div class="hero rv"><div class=ic>🔒</div><h1>تم إيقاف حسابك</h1><p class=m style="margin:8px 0 18px">تواصل مع الأدمن لو شايف إن ده بالغلط.</p><div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><button class=y data-a=apopen>💬 كلّم الأدمن${apN()?`<b class=apbdg>${apN()}</b>`:''}</button><button class=s data-a=out>خروج</button></div></div>`
  :needProf()?onb()
  :!S.pl?spin
  :head()+`<main class="${S.adm&&isA()?'wide':''}">${S.adm&&isA()?admin():stu()}</main>`;
@@ -1267,6 +1396,7 @@ const render=()=>{
  syncIde();
  supBadge();
  cmWatch();
+ pwaMaybe();
 };
 
 /* ===== الأنيميشن ===== */
@@ -1778,7 +1908,8 @@ const feed=()=>{
   onSnapshot(query(collection(db,'runs'),orderBy('at','desc'),limit(500)),s=>{S.runs=s.docs.map(d=>({id:d.id,...d.data()}));render()},()=>0),
   onSnapshot(collection(db,'support'),s=>{S.sups=Object.fromEntries(s.docs.map(d=>[d.id,{id:d.id,...d.data({serverTimestamps:'estimate'})}]));const g=s.docs.map(d=>d.id+supSig(d.data({serverTimestamps:'estimate'}))).join('|');if(g===SUP.gs)return typPaint();SUP.gs=g;supSync()},()=>0),
   onSnapshot(collection(db,'presence'),s=>{S.pres=Object.fromEntries(s.docs.map(d=>[d.id,tm(d.data().at)]));if(S.adm&&(S.tab=='ai'||S.tab=='as'))render();seenPaint()},()=>0),
-  onSnapshot(collection(db,'sched'),s=>{S.sched=s.docs.map(d=>({id:d.id,...d.data()}));if(S.adm&&S.tab=='at')render();schedRun()},()=>0)
+  onSnapshot(collection(db,'sched'),s=>{S.sched=s.docs.map(d=>({id:d.id,...d.data()}));if(S.adm&&S.tab=='at')render();schedRun()},()=>0),
+   onSnapshot(collection(db,'appeals'),s=>{S.apps=Object.fromEntries(s.docs.map(d=>[d.id,{id:d.id,...d.data({serverTimestamps:'estimate'})}]));render()},()=>0)
  );
 };
 const mv=async(col,list,id,d,same)=>{
@@ -2212,6 +2343,9 @@ document.addEventListener('click',async e=>{
   else if(a=='peek'){const i=$('#ap_');i.type=i.type=='password'?'text':'password';b.textContent=i.type=='password'?'إظهار':'إخفاء'}
   else if(a=='out')signOut(auth);
   else if(a=='pmenu')openPM(b);
+  else if(a=='pwa')pwaClick();
+  else if(a=='apopen')openAppeal(S.u.uid,0);
+  else if(a=='apadm')openAppeal(id,1);
   else if(a=='supimg')$('#sup_fi')?.click();
   else if(a=='supmic')startRec();
   else if(a=='recx')stopRec(true);
@@ -2260,7 +2394,7 @@ document.addEventListener('click',async e=>{
   else if(a=='chat')openChat(id);
   else if(a=='supclose')closeChat();
   else if(a=='supdel')await delChat();
-  else if(a=='adm'){S.adm=!S.adm;S.tab=S.adm?'av':'v';S.nav=S.adm?1:0;render();scrollTo({top:0})}
+  else if(a=='adm'){S.adm=!S.adm;S.tab=S.adm?'ao':'v';S.nav=0;render();scrollTo({top:0})}
   else if(a=='navtog'){S.nav=!S.nav;navPaint()}
   else if(a=='tab'){S.tab=id;if(S.adm&&isA()){S.nav=0;navPaint()}render();if(id!='e')scrollTo({top:0,behavior:'smooth'})}
   else if(a=='play'){S.cur=id;render();scrollTo({top:0,behavior:'smooth'});saveP({last:id})}
@@ -2351,12 +2485,12 @@ onAuthStateChanged(auth,async u=>{
  stop(un);stop(cs);closeChat();
  if(u&&S.wantA&&low(u)!==AD){S.wantA=0;await signOut(auth);return}
  const A=low(u)===AD;S.wantA=0;
- Object.assign(S,{deleting:0,editProf:0,pfKey:'',pfPhoto:'',ready:1,u,me:null,adm:A?1:0,tab:A?'av':'v',nav:A?1:0,cur:null,eq:null,err:'',am:0,content:[],qs:[],users:[],prog:{},allProg:{},live:{},runs:[],settings:{},pl:0,ans:{},done:0,sel:null,sup1:null,sups:{}});
+ Object.assign(S,{apps:{},ap1:null,deleting:0,editProf:0,pfKey:'',pfPhoto:'',ready:1,u,me:null,adm:A?1:0,tab:A?'ao':'v',nav:0,cur:null,eq:null,err:'',am:0,content:[],qs:[],users:[],prog:{},allProg:{},live:{},runs:[],settings:{},pl:0,ans:{},done:0,sel:null,sup1:null,sups:{}});
  if(!u)return render();
  const r=doc(db,'users',u.uid);let mk=0;
  un.push(onSnapshot(r,s=>{
   S.me=s.exists()?s.data():(A?{banned:false}:{banned:false,_new:1});
-  feed();
+  feed();apSub();
   render();
 },x=>{S.me={banned:false};fail(x)}));
 });
