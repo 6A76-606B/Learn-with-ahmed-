@@ -1179,24 +1179,27 @@ const admin=()=>{
   const rateLine=up+dw?`<p class=m style="margin:0 2px 10px">⭐ رضا الطلاب عن الدعم: 👍 ${up} · 👎 ${dw}</p>`:'';
   const sf=S.sf||'all',LF=L.filter(x=>sf=='all'||(x.st||'open')==sf);
   h+=`<div data-keep="ai"><p class=m style="margin:0 2px 10px">رسايل الطلاب بتوصلك هنا لحظة بلحظة. اضغط على أي محادثة عشان تردّ. ولو عايز تبدأ إنت، من تبويب الطلاب اضغط 💬 رسالة.</p></div><div data-live>${rateLine}<div class=sfl>${[['all','الكل'],['open',STL.open],['follow',STL.follow],['done',STL.done]].map(([k,t])=>`<button type=button class="s${sf==k?' on':''}" data-a=sf data-id=${k}>${t}${k=='all'?' ('+L.length+')':' ('+L.filter(x=>(x.st||'open')==k).length+')'}</button>`).join('')}</div>`
+   +(!isS()&&S.sec1?(()=>{const x=S.sec1,un=x.lastFrom=='s'&&tm(x.at)>tm(x.uRead);return `<button class="s ls" data-a=secme><span class=av style="display:grid;place-items:center">👑</span><span class=g><b>داما</b> <span class=m style="font-size:12px">${rel(tm(x.at))}</span><small class=m dir=auto style="display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${x.lastFrom=='u'?'أنت: ':''}${E(x.last||'')}</small></span>${un?'<span class="tag ert">جديد</span>':''}</button>`})():'')
    +(LF.map(x=>{const un=x.lastFrom=='u'&&tm(x.at)>tm(x.aRead),p=safe(x.photo||'');return `<button class="s ls" data-a=chat data-id="${E(x.id)}">${p?`<img class=av src="${E(p)}" referrerpolicy=no-referrer alt="">`:'<span class=av style="display:grid;place-items:center">👤</span>'}<span class=g><b>${E(x.name||x.email||'طالب')}</b> <span class=m style="font-size:12px">${seenTxt(x.id)}</span><small class=m dir=auto style="display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${x.lastFrom=='a'?'أنت: ':''}${E(x.last||'')}</small></span>${x.st&&x.st!='open'?`<span class=tag>${STL[x.st]||''}${x.st=='done'&&x.rate?(x.rate=='up'?' 👍':' 👎'):''}</span>`:''}<span class=m>${rel(tm(x.at))}</span>${un?'<b class=bdg>جديد</b>':''}</button>`}).join('')||empty('لسه مفيش رسايل دعم. أول ما طالب يبعت هتظهر هنا.','💬'))+`</div>`;
  }else if(S.tab=='aq'){
   const e=S.qs.find(x=>x.id==S.eq),v=e||{q:'',o:['','','',''],a:0};
   h+=`<div class=card data-keep="aq-${E(e?e.id:'new')}"><h3>${e?'✏️ تعديل السؤال':'➕ سؤال جديد'}</h3><input id=qq placeholder="نص السؤال" value="${E(v.q)}">${[0,1,2,3].map(i=>`<input id=o${i} placeholder="الاختيار ${i+1}" value="${E((v.o||[])[i]||'')}">`).join('')}<select id=qa>${[0,1,2,3].map(i=>`<option value=${i}${v.a==i?' selected':''}>الإجابة الصح: ${i+1}</option>`).join('')}</select><div class=row style="margin-top:8px"><button class=y data-a=addq>${e?'حفظ التعديل':'إضافة السؤال'}</button>${e?'<button class=s data-a=cancelq>إلغاء</button>':''}</div></div>`
    +`<div data-live>${S.qs.map((q,n)=>`<div class="card row wr"><span class=g><span class=qn>${n+1}</span>${E(q.q)}</span>${sm('qu',q.id,'↑','s',!n)}${sm('qd',q.id,'↓','s',n==S.qs.length-1)}${sm('editq',q.id,'✏️')}${sm('delq',q.id,'حذف','r')}</div>`).join('')||empty('لسه مفيش أسئلة.','❓')}</div>`;
 }else if(S.tab=='ac'&&isS()){
-  const L=Object.values(S.secs||{}).sort((a,b)=>tm(b.at)-tm(a.at));
-  h+=`<p class=m style="margin:0 2px 10px">محادثات سرية بينك وبين طالب بس. الأدمن العادي مايشوفهاش خالص، والطالب يشوف المحادثة بس بعد ما تبدأها إنت. لو عايز تبدأ واحدة، من تبويب الطلاب اضغط 🔒 سرية.</p><div data-live>`
-   +(L.map(x=>{const un=x.lastFrom=='u'&&tm(x.at)>tm(x.sRead);return `<button class="s ls" data-a=secopen data-id="${E(x.id)}"><span class=av style="display:grid;place-items:center">🔒</span><span class=g><b>${E(x.name||x.email||'طالب')}</b> <span class=m style="font-size:12px">${rel(tm(x.at))}</span><small class=m dir=auto style="display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${x.lastFrom=='s'?'أنت: ':''}${E(x.last||'')}</small></span>${un?'<span class="tag ert">جديد</span>':''}</button>`}).join('')||empty('لسه مفيش محادثات سرية.','🔒'))+`</div>`;
+  const L=[...Object.values(S.secs||{}).map(x=>({...x,_a:0})),...Object.values(S.asecs||{}).map(x=>({...x,_a:1}))].sort((a,b)=>tm(b.at)-tm(a.at));
+  h+=`<p class=m style="margin:0 2px 10px">محادثات سرية بينك وبين طالب أو أدمن بالاسم. الأدمن العادي مايشوفهاش خالص، والطالب يشوف المحادثة بس بعد ما تبدأها إنت. لو عايز تبدأ واحدة، من تبويب الطلاب اضغط 🔒 سرية.</p><div data-live>`
+   +(L.map(x=>{const un=x.lastFrom=='u'&&tm(x.at)>tm(x.sRead);return `<button class="s ls" data-a=${x._a?'asecopen':'secopen'} data-id="${E(x.id)}"><span class=av style="display:grid;place-items:center">${x._a?'👑':'🔒'}</span><span class=g><b>${E(x.name||x.email||'طالب')}</b> <span class=m style="font-size:12px">${rel(tm(x.at))}</span><small class=m dir=auto style="display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${x.lastFrom=='s'?'أنت: ':''}${E(x.last||'')}</small></span>${un?'<span class="tag ert">جديد</span>':''}</button>`}).join('')||empty('لسه مفيش محادثات سرية.','🔒'))+`</div>`;
  }else if(S.tab=='am'&&isS()){
-  const AC=ADMINS.filter(e=>e!==SUPER),SS=Object.values(S.asess||{});
-  h+=`<p class=m style="margin:0 2px 10px">حسابات الأدمن التانية: تشوف مين شغّال دلوقتي، وتخرجه من كل الأجهزة، تبعتله لينك تغيير الباسورد، أو تحذف حسابه (بيتمسح اسمه وجلساته ويتخرّج، ولما يدخل تاني يكتب اسمه من جديد).</p><div data-live>`
-   +AC.map(e=>{
-    const ss=SS.filter(x=>(x.email||'').toLowerCase()==e&&Date.now()-tm(x.at)<6048e5).sort((a,b)=>tm(b.at)-tm(a.at)),on=ss.filter(x=>Date.now()-tm(x.at)<18e4);
-    return `<div class=card><div class=row><span class=g><b dir=ltr>${E(e)}</b>${(()=>{const n=(ss.find(x=>x.name)||{}).name;return n?` <span class=tag>${E(n)}</span>`:''})()}<small class=m style="display:block">${on.length?'🟢 أونلاين دلوقتي ('+on.length+(on.length==1?' جهاز':' أجهزة')+')':ss.length?'آخر ظهور '+rel(tm(ss[0].at)):'مفيش جلسة ظاهرة (لسه ماسجّلش دخول من بعد التحديث)'}</small></span></div>`
-     +(ss.length?`<div style="margin:10px 0 4px">${ss.map(x=>`<div class=row style="padding:7px 0;border-top:1px solid var(--ln)"><span class=g>${Date.now()-tm(x.at)<18e4?'🟢':'⚪'} ${E(x.ua||'جهاز')}</span><span class=m>دخل ${rel(x.since)}</span></div>`).join('')}</div>`:'')
-     +`<div class="row wr" style="margin-top:10px">${sm('kick',e,'🚪 إخراج من كل الأجهزة','r')}${sm('pwreset',e,'🔑 تغيير الباسورد')}${sm('admdel',e,'🗑 حذف الحساب','r')}</div></div>`}).join('')
-   +`</div><p class=m style="margin:12px 2px">🔑 الباسورد بيتغيّر من لينك بيوصل لإيميل الأدمن، وهو اللي بيختار الباسورد الجديد (مفيش طريقة من المتصفح تحط باسورد لحد تاني بنفسك). 🚪 الإخراج بيقفل جلساته دلوقتي، لكنه لسه يقدر يدخل بالباسورد القديم لحد ما يتغيّر.</p>`;
+  const AC=ADMINS.filter(e=>e!==SUPER),SS=S.asess||{},PR=S.aprs||{},now=Date.now();
+  const ids=[...new Set([...Object.keys(PR),...Object.keys(SS).filter(k=>now-tm(SS[k].at)<6048e5)])];
+  const L=ids.map(k=>({id:k,p:PR[k],a:SS[k]})).sort((x,y)=>(tm(y.a?.at)||tm(y.p?.at))-(tm(x.a?.at)||tm(x.p?.at)));
+  h+=`<p class=m style="margin:0 2px 10px">كل شخص بيدخل كأدمن بيكتب اسمه. هنا بتشوفهم بالاسم: مين أونلاين، وتخرّج أي واحد، أو تحظره، أو تحذف حسابه (يرجع يكتب اسمه من جديد).</p><div data-live>`
+   +(L.map(({id,p,a})=>{
+    const on=a&&now-tm(a.at)<18e4,nm=p?.name||a?.name||'بدون اسم',ua=p?.ua||a?.ua||'جهاز';
+    return `<div class=card><div class=row><span class=g><b dir=auto>${on?'🟢':'⚪'} ${E(nm)}</b>${p?.banned?' <span class="tag ban">محظور</span>':''}${!p?' <span class=tag>لسه ماكتبش اسمه</span>':''}<small class=m style="display:block">${E(ua)} · ${on?'أونلاين دلوقتي':a?'آخر ظهور '+rel(tm(a.at)):'—'}</small></span></div>`
+     +`<div class="row wr" style="margin-top:10px">${sm('kickone',id,'🚪 إخراج','r')}${p?sm('admban',id,p.banned?'✅ فك الحظر':'⛔ حظر',p.banned?'s':'r'):''}${p?sm('admdel',id,'🗑 حذف الحساب','r'):''}${p?sm('asecopen',id,'🔒 رسالة سرية'):''}</div></div>`}).join('')||empty('لسه مفيش أدمن سجّلوا بأسمائهم.','👑'))
+   +`</div><div class=card><h3>🔑 الباسورد المشترك</h3><p class=m style="margin-bottom:10px">كل الأدمن بيدخلوا بنفس الإيميل والباسورد، فتغيير الباسورد بيأثر عليهم كلهم.</p><div class="row wr">${AC.map(e=>`${sm('pwreset',e,'🔑 لينك تغيير الباسورد ('+E(e)+')')}${sm('kick',e,'🚪 إخراج الكل','r')}`).join('')}</div></div>`
+   +`<p class=m style="margin:12px 2px">⚠️ الحظر والإخراج بيمنعوا الشخص من اللوحة من جوه الموقع. لأن الكل بيشارك نفس الحساب، لو عايز تقفل الباب نهائياً على حد اتحظر غيّر الباسورد.</p>`;
  }else if(S.tab=='ab'){
   const B=U.filter(u=>u.banned).map(u=>({u,a:(S.apps||{})[u.id]})).sort((x,y)=>(tm(y.a?.at)||ms(y.u))-(tm(x.a?.at)||ms(x.u)));
   h+=`<p class=m style="margin:0 2px 10px">الحسابات اللي اتحظرت ورسايلها ليك. اضغط على 💬 المحادثة عشان تقرأ وتردّ، أو فك الحظر.</p><div data-live>`
@@ -1508,30 +1511,31 @@ const askNext=id=>{
 
 /* ===== المشرف الرئيسي: جلسات الأدمن + الإخراج ===== */
 let admSid='',admSince=0;
+const mySid=()=>S.u.uid+'_'+admDev();
 const admDev=()=>{try{let d=localStorage.getItem('adm-dev');if(!d){d=Math.random().toString(36).slice(2,8);localStorage.setItem('adm-dev',d)}return d}catch(e){return 'x'}};
 const uaShort=()=>{const u=navigator.userAgent,os=/Android/i.test(u)?'أندرويد':/iPhone|iPad|iPod/i.test(u)?'آيفون':/Windows/i.test(u)?'ويندوز':/Mac/i.test(u)?'ماك':/Linux/i.test(u)?'لينكس':'جهاز',br=/Edg\//.test(u)?'Edge':/OPR\//.test(u)?'Opera':/Firefox/i.test(u)?'Firefox':/Chrome/i.test(u)?'Chrome':/Safari/i.test(u)?'Safari':'متصفح';return os+' · '+br+(standalone()?' · تطبيق':'')};
-const admPing=()=>{if(!S.u||!isA()||isS()||S.deleting||!admSid)return;setDoc(doc(db,'asess',admSid),{uid:S.u.uid,email:S.u.email||'',name:(admName()||S.u.displayName||'').slice(0,100),ua:uaShort().slice(0,120),since:admSince,at:serverTimestamp()}).catch(()=>0)};
+const admPing=()=>{if(!S.u||!isA()||isS()||S.deleting||!admSid||!S.apr?.name||S.apr?.banned)return;setDoc(doc(db,'asess',admSid),{uid:S.u.uid,email:S.u.email||'',name:admName().slice(0,100),ua:uaShort().slice(0,120),since:admSince,at:serverTimestamp()}).catch(()=>0)};
 const startAdmSession=()=>{
- admSid=S.u.uid+'_'+admDev();admSince=Date.now();admPing();
+ admSid=mySid();admSince=Date.now();admPing();
  const iv=setInterval(admPing,6e4),vis=()=>{if(!document.hidden)admPing()};
  document.addEventListener('visibilitychange',vis);
- let base;
  cs.push(()=>{clearInterval(iv);document.removeEventListener('visibilitychange',vis)},
-  onSnapshot(doc(db,'kicks',low(S.u)),s=>{
+  ...[low(S.u),admSid].map(kid=>{let base;return onSnapshot(doc(db,'kicks',kid),s=>{
    if(s.metadata.fromCache)return;
    const t=s.exists()?tm(s.data().at):0;
    if(base===undefined){base=t;return}
    if(t>base){base=t;admKicked()}
-  },()=>0));
+  },()=>0)}));
 };
 const admKicked=async()=>{try{await deleteDoc(doc(db,'asess',admSid))}catch(e){}await signOut(auth);alert('تم تسجيل خروجك من قبل المشرف الرئيسي.')};
 /* ===== المحادثات السرية: بين المشرف الرئيسي (dama) وطالب واحد بس — الأدمن العادي مايشوفهاش ===== */
-const SEC={uid:null,msgs:[],un:null};
-const secUnread=()=>isS()?Object.values(S.secs||{}).filter(x=>x.lastFrom=='u'&&tm(x.at)>tm(x.sRead)).length:(S.sec1&&S.sec1.lastFrom=='s'&&tm(S.sec1.at)>tm(S.sec1.uRead)?1:0);
+const SEC={uid:null,msgs:[],un:null,col:'secret'};
+const secMap=()=>SEC.col=='asecret'?(S.asecs||{}):(S.secs||{});
+const secUnread=()=>isS()?[...Object.values(S.secs||{}),...Object.values(S.asecs||{})].filter(x=>x.lastFrom=='u'&&tm(x.at)>tm(x.sRead)).length:(S.sec1&&S.sec1.lastFrom=='s'&&tm(S.sec1.at)>tm(S.sec1.uRead)?1:0);
 const secBtn=()=>{if(isA()||!S.sec1)return '';const n=secUnread();return `<button class="s ico supb" data-a=secme title="محادثة خاصة">🔒<b class=bdg${n?'':' hidden'}>${n||''}</b></button>`};
 const secPaint=()=>{
  const m=$('#sec_m');if(!m)return;
- const me=isS()?'s':'u',pr=isS()?S.secs[SEC.uid]:S.sec1,rd=tm(isS()?pr?.uRead:pr?.sRead);
+ const me=isS()?'s':'u',pr=isS()?secMap()[SEC.uid]:S.sec1,rd=tm(isS()?pr?.uRead:pr?.sRead);
  let h='',pd='',pf='';
  SEC.msgs.forEach(x=>{
   const t=tm(x.at)||Date.now(),dk=new Date(t).toDateString(),mine=x.from==me;
@@ -1544,44 +1548,45 @@ const secPaint=()=>{
 };
 const secRead=()=>{
  if(!SEC.uid||document.hidden)return;
- const A=isS(),pr=A?S.secs[SEC.uid]:S.sec1;if(!pr)return;
- if(pr.lastFrom==(A?'u':'s')&&tm(pr.at)>tm(A?pr.sRead:pr.uRead)&&SEC.rd!=tm(pr.at)){SEC.rd=tm(pr.at);updateDoc(doc(db,'secret',SEC.uid),A?{sRead:serverTimestamp()}:{uRead:serverTimestamp()}).catch(()=>0)}
+ const A=isS(),pr=A?secMap()[SEC.uid]:S.sec1;if(!pr)return;
+ if(pr.lastFrom==(A?'u':'s')&&tm(pr.at)>tm(A?pr.sRead:pr.uRead)&&SEC.rd!=tm(pr.at)){SEC.rd=tm(pr.at);updateDoc(doc(db,SEC.col,SEC.uid),A?{sRead:serverTimestamp()}:{uRead:serverTimestamp()}).catch(()=>0)}
 };
-const closeSec=()=>{SEC.un&&SEC.un();SEC.un=null;SEC.uid=null;$('#sec')?.remove();if(!$('#sup'))document.body.classList.remove('sup-on')};
+const closeSec=()=>{SEC.un&&SEC.un();SEC.un=null;SEC.uid=null;SEC.col='secret';$('#sec')?.remove();if(!$('#sup'))document.body.classList.remove('sup-on')};
 const secSend=async()=>{
  const ta=$('#sec_in');if(!ta||!SEC.uid)return;const text=ta.value.trim().slice(0,2000);if(!text)return;
- const A=isS(),uid=SEC.uid,pr=A?S.secs[uid]:S.sec1;ta.value='';ta.style.height='';ta.focus();
+ const A=isS(),uid=SEC.uid,pr=A?secMap()[uid]:S.sec1;ta.value='';ta.style.height='';ta.focus();
  const meta={last:lastTxt(text).slice(0,80),lastFrom:A?'s':'u',at:serverTimestamp()};meta[A?'sRead':'uRead']=serverTimestamp();
- if(!pr){const u=S.users.find(x=>x.id==uid)||{};Object.assign(meta,{uid,name:(u.name||u.email||'طالب').slice(0,200),email:u.email||''})}
+ if(!pr){const u=SEC.col=='asecret'?{name:(S.aprs||{})[uid]?.name}:(S.users.find(x=>x.id==uid)||{});Object.assign(meta,{uid,name:(u.name||u.email||'طالب').slice(0,200),email:u.email||''})}
  const b=writeBatch(db);
- b.set(doc(collection(db,'secret',uid,'msgs')),{from:A?'s':'u',text,at:serverTimestamp()});
- b.set(doc(db,'secret',uid),meta,{merge:true});
+ b.set(doc(collection(db,SEC.col,uid,'msgs')),{from:A?'s':'u',text,at:serverTimestamp()});
+ b.set(doc(db,SEC.col,uid),meta,{merge:true});
  try{await b.commit()}catch(x){ta.value=text;alert('تعذّر الإرسال: '+errMsg(x))}
 };
-const secOpen=uid=>{
- if(!uid||!S.u)return;if(!isS()&&uid!=S.u.uid)return;
- closeSec();SEC.uid=uid;SEC.msgs=[];SEC.rd=0;
- const A=isS(),d=A?(S.secs[uid]||S.users.find(x=>x.id==uid)||{}):{},p=safe(d.photo||'');
- const nm=A?(d.name||d.email||'طالب'):'محادثة خاصة',sub=A?'🔒 سرية — إنت والطالب بس':'🔒 سرية — إنت والمشرف بس';
+const secOpen=(uid,col='secret')=>{
+ if(!uid||!S.u)return;if(!isS()&&uid!=(isA()?mySid():S.u.uid))return;
+ closeSec();SEC.col=col;SEC.uid=uid;SEC.msgs=[];SEC.rd=0;
+ const A=isS(),d=A?(secMap()[uid]||(col=='asecret'?{name:(S.aprs||{})[uid]?.name}:S.users.find(x=>x.id==uid))||{}):{},p=safe(d.photo||'');
+ const nm=A?(d.name||d.email||'طالب'):(isA()?'داما':'محادثة خاصة'),sub=A?(col=='asecret'?'🔒 سرية — إنت والأدمن ده بس':'🔒 سرية — إنت والطالب بس'):(isA()?'🔒 محادثة خاصة':'🔒 سرية — إنت والمشرف بس');
  const w=document.createElement('div');w.id='sec';w.className='supw';
  w.innerHTML=`<div class=supp><div class=suph><button type=button data-s=x title="رجوع">→</button><span class=supav>🔒</span><div class=g><b>${E(nm)}</b><small dir=auto>${sub}</small></div>${A?'<button type=button data-s=del title="مسح المحادثة">🗑</button>':''}</div><div class=supm id=sec_m><div class=semp>⏳</div></div><div class=supf><textarea id=sec_in rows=1 dir=auto maxlength=2000 placeholder="اكتب رسالة سرية…"></textarea><button type=button class=supsend data-s=send title="إرسال" aria-label="إرسال"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M2 21 23 12 2 3v7l15 2-15 2z"/></svg></button></div></div>`;
  w.onclick=async e=>{
   if(e.target===w)return closeSec();
   const b=e.target.closest('[data-s]');if(!b)return;const k=b.dataset.s;
   if(k=='x')closeSec();else if(k=='send')secSend();
-  else if(k=='del'){if(!isS()||!confirm('تمسح المحادثة السرية دي كلها؟ مفيش رجوع.'))return;const uid2=SEC.uid;try{const s=await getDocs(collection(db,'secret',uid2,'msgs'));await Promise.all(s.docs.map(x=>deleteDoc(x.ref)));await deleteDoc(doc(db,'secret',uid2));closeSec()}catch(x){alert('تعذّر المسح: '+errMsg(x))}}
+  else if(k=='del'){if(!isS()||!confirm('تمسح المحادثة السرية دي كلها؟ مفيش رجوع.'))return;const uid2=SEC.uid;try{const s=await getDocs(collection(db,SEC.col,uid2,'msgs'));await Promise.all(s.docs.map(x=>deleteDoc(x.ref)));await deleteDoc(doc(db,SEC.col,uid2));closeSec()}catch(x){alert('تعذّر المسح: '+errMsg(x))}}
  };
  w.onkeydown=e=>{if(e.key=='Escape')closeSec();else if(e.target.id=='sec_in'&&e.key=='Enter'&&!e.shiftKey&&!e.isComposing&&!matchMedia('(pointer:coarse)').matches){e.preventDefault();secSend()}};
  w.addEventListener('input',e=>{if(e.target.id=='sec_in'){e.target.style.height='auto';e.target.style.height=Math.min(e.target.scrollHeight,120)+'px'}});
  document.body.append(w);document.body.classList.add('sup-on');
- SEC.un=onSnapshot(query(collection(db,'secret',uid,'msgs'),orderBy('at','desc'),limit(200)),s=>{SEC.msgs=s.docs.map(x=>({id:x.id,...x.data({serverTimestamps:'estimate'})})).reverse();secPaint();secRead()},x=>{const m=$('#sec_m');if(m)m.innerHTML=`<div class=semp>${E(errMsg(x))}</div>`});
+ SEC.un=onSnapshot(query(collection(db,SEC.col,uid,'msgs'),orderBy('at','desc'),limit(200)),s=>{SEC.msgs=s.docs.map(x=>({id:x.id,...x.data({serverTimestamps:'estimate'})})).reverse();secPaint();secRead()},x=>{const m=$('#sec_m');if(m)m.innerHTML=`<div class=semp>${E(errMsg(x))}</div>`});
  if(!matchMedia('(pointer:coarse)').matches)setTimeout(()=>$('#sec_in')?.focus(),250);
 };
 /* ===== اسم الأدمن (بيظهر للطالب لو الأدمن داخل بحساب المشرف) + حذف حساب أدمن ===== */
-const needAdmName=()=>isA()&&S.apr!==undefined&&(!!S.apr?.need||(isS()&&!S.apr?.name));
+const needAdmName=()=>isA()&&S.apr!==undefined&&(!S.apr||!S.apr.name||!!S.apr.need);
+const admBanned=()=>isA()&&!isS()&&!!S.apr?.banned;
 const admName=()=>(S.apr?.name||'').trim().slice(0,60);
 const supName=()=>isA()&&isS()?admName():'';
-const admOnb=()=>`<div data-keep="aonb"><div class="hero rv onb"><div class=ic>👋</div><h1>اكتب اسمك</h1><p class=m>الاسم ده هو اللي هيظهر ${isS()?'للطلاب في الدعم والتعليقات':'للمشرف الرئيسي'}.</p>
+const admOnb=()=>`<div data-keep="aonb"><div class="hero rv onb"><div class=ic>👋</div><h1>اكتب اسمك</h1><p class=m>اكتب اسمك — ${isS()?'هيظهر للطلاب في الدعم والتعليقات':'المشرف الرئيسي هيشوفك بالاسم ده ويقدر يتحكم في دخولك'}.</p>
 <div class=lbox><label class=lb for=aon_nm>الاسم (إجباري)</label><input id=aon_nm maxlength=60 dir=auto autocomplete=name placeholder="اكتب اسمك" value="${E(admName()||'')}"><div class=oerr id=aon_er></div></div>
 <button type=button class="y wbtn" data-a=aonsave id=aon_sv>حفظ وابدأ</button>
 <div style="margin-top:10px"><button type=button class="gh sm" data-a=out>خروج</button></div></div></div>`;
@@ -1589,18 +1594,30 @@ const aonSave=async()=>{
  const nm=($('#aon_nm')?.value||'').trim().replace(/\s+/g,' ').slice(0,60),er=$('#aon_er'),bt=$('#aon_sv');
  if(nm.length<2){if(er)er.textContent='الاسم إجباري (حرفين على الأقل)';$('#aon_nm')?.focus();return}
  if(er)er.textContent='';if(bt)bt.disabled=true;
- try{await setDoc(doc(db,'aprof',low(S.u)),{name:nm,need:false,at:serverTimestamp()})}
+ try{await setDoc(doc(db,'aprof',mySid()),{name:nm,need:false,ua:uaShort().slice(0,120),at:serverTimestamp()})}
  catch(x){if(er)er.textContent='تعذّر الحفظ: '+errMsg(x);if(bt)bt.disabled=false}
 };
-const admDel=async em=>{
- if(!isS())return;em=String(em).toLowerCase();
- if(!confirm('تحذف حساب الأدمن '+em+'؟\n\nهيتمسح اسمه وجلساته، واتخرّج من كل الأجهزة، ولما يدخل تاني بالإيميل والباسورد هيطلب منه يكتب اسمه من جديد.'))return;
+const admDel=async sid=>{
+ if(!isS())return;
+ const n=(S.aprs||{})[sid]?.name||'الأدمن ده';
+ if(!confirm('تحذف حساب "'+n+'"؟\n\nهيتخرّج من الجهاز ده، واسمه هيتمسح، ولما يدخل تاني بالإيميل والباسورد هيطلب منه يكتب اسمه من جديد.'))return;
  const b=writeBatch(db);
- b.set(doc(db,'aprof',em),{need:true,by:low(S.u),at:serverTimestamp()});
- b.set(doc(db,'kicks',em),{at:serverTimestamp(),by:low(S.u)});
- Object.values(S.asess||{}).filter(x=>(x.email||'').toLowerCase()==em).forEach(x=>b.delete(doc(db,'asess',x.id)));
- try{await b.commit();gToast('🗑 اتحذف حساب الأدمن واتخرّج من كل الأجهزة')}catch(x){alert('تعذّر الحذف: '+errMsg(x))}
+ b.delete(doc(db,'aprof',sid));
+ b.set(doc(db,'kicks',sid),{at:serverTimestamp(),by:low(S.u)});
+ b.delete(doc(db,'asess',sid));
+ try{await b.commit();gToast('🗑 اتحذف حساب '+n)}catch(x){alert('تعذّر الحذف: '+errMsg(x))}
 };
+const admKickOne=async sid=>{
+ if(!isS())return;const n=(S.aprs||{})[sid]?.name||S.asess?.[sid]?.name||'الجهاز ده';
+ if(!confirm('تخرّج "'+n+'" دلوقتي؟'))return;
+ try{await setDoc(doc(db,'kicks',sid),{at:serverTimestamp(),by:low(S.u)});gToast('🚪 تم إخراج '+n)}catch(x){alert('تعذّر: '+errMsg(x))}
+};
+const admBan=async sid=>{
+ if(!isS())return;const a=(S.aprs||{})[sid];if(!a)return;const nb=!a.banned;
+ if(!confirm(nb?'تحظر "'+a.name+'"؟ هيتخرّج وماينفعش يدخل لوحة الأدمن.':'تفك الحظر عن "'+a.name+'"؟'))return;
+ try{await updateDoc(doc(db,'aprof',sid),{banned:nb,by:low(S.u),at:serverTimestamp()});if(nb)await setDoc(doc(db,'kicks',sid),{at:serverTimestamp(),by:low(S.u)});gToast(nb?'⛔ اتحظر '+a.name:'✅ اتفك الحظر عن '+a.name)}catch(x){alert('تعذّر: '+errMsg(x))}
+};
+const blockedView=()=>'<div class="hero rv"><div class=ic>⛔</div><h1>تم حظرك من لوحة الأدمن</h1><p class=m style="margin:8px 0 18px">تواصل مع المشرف الرئيسي.</p><button class=s data-a=out>خروج</button></div>';
 const view=()=>!S.ready?spin
  :!S.u?login()
  :S.deleting?'<div class="hero rv"><div class=ic>🗑</div><h1>جاري حذف حسابك…</h1><p class=m>استنى لحظات وماتقفلش الصفحة.</p></div>'
@@ -1608,6 +1625,7 @@ const view=()=>!S.ready?spin
  :!S.me?spin
  :S.me.banned?`<div class="hero rv"><div class=ic>🔒</div><h1>تم إيقاف حسابك</h1><p class=m style="margin:8px 0 18px">تواصل مع الأدمن لو شايف إن ده بالغلط.</p><div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><button class=y data-a=apopen>💬 كلّم الأدمن${apN()?`<b class=apbdg>${apN()}</b>`:''}</button><button class=s data-a=out>خروج</button></div></div>`
  :isA()&&S.apr===undefined?spin
+ :admBanned()?blockedView()
  :needAdmName()?admOnb()
  :needProf()?onb()
  :!S.pl?spin
@@ -2157,9 +2175,12 @@ const feed=()=>{
    onSnapshot(collection(db,'appeals'),s=>{S.apps=Object.fromEntries(s.docs.map(d=>[d.id,{id:d.id,...d.data({serverTimestamps:'estimate'})}]));render()},()=>0),
    onSnapshot(collection(db,'reports'),s=>{S.reps=s.docs.map(d=>({id:d.id,...d.data({serverTimestamps:'estimate'})}));render()},()=>0)
  );
+ if(isS())cs.push(onSnapshot(collection(db,'asecret'),s=>{S.asecs=Object.fromEntries(s.docs.map(d=>[d.id,{id:d.id,...d.data({serverTimestamps:'estimate'})}]));render()},()=>0));
  if(isS())cs.push(onSnapshot(collection(db,'secret'),s=>{S.secs=Object.fromEntries(s.docs.map(d=>[d.id,{id:d.id,...d.data({serverTimestamps:'estimate'})}]));render()},()=>0));
- else if(!isA())cs.push(onSnapshot(doc(db,'secret',S.u.uid),s=>{S.sec1=s.exists()?s.data({serverTimestamps:'estimate'}):null;render()},()=>0));
- if(isA())cs.push(onSnapshot(doc(db,'aprof',low(S.u)),s=>{S.apr=s.exists()?s.data():null;render()},()=>{S.apr=null;render()}));
+ else if(isA())cs.push(onSnapshot(doc(db,'asecret',mySid()),s=>{S.sec1=s.exists()?s.data({serverTimestamps:'estimate'}):null;render()},()=>0));
+ else cs.push(onSnapshot(doc(db,'secret',S.u.uid),s=>{S.sec1=s.exists()?s.data({serverTimestamps:'estimate'}):null;render()},()=>0));
+ if(isA())cs.push(onSnapshot(doc(db,'aprof',mySid()),s=>{S.apr=s.exists()?s.data():null;if(!isS()&&S.apr?.name&&!S.apr.banned)admPing();render()},()=>{S.apr=null;render()}));
+ if(isS())cs.push(onSnapshot(collection(db,'aprof'),s=>{S.aprs=Object.fromEntries(s.docs.map(d=>[d.id,{id:d.id,...d.data({serverTimestamps:'estimate'})}]));if(S.tab=='am')render()},()=>0));
  if(isA()){if(isS())cs.push(onSnapshot(collection(db,'asess'),s=>{S.asess=Object.fromEntries(s.docs.map(d=>[d.id,{id:d.id,...d.data()}]));if(S.tab=='am')render()},()=>0));else startAdmSession()}
 };
 const mv=async(col,list,id,d,same)=>{
@@ -2297,7 +2318,7 @@ const shrinkChat=async f=>{
 };
 const pvPaint=()=>{const e=$('#sup_pv');if(!e)return;if(!SUP.img){e.hidden=true;e.innerHTML='';return}e.hidden=false;e.innerHTML=`<img src="${SUP.img}" alt=""><span>الصورة جاهزة، تقدر تكتب تعليق وتبعت</span><button type=button data-a=pvx title="شيل الصورة">✕</button>`};
 const openImgV=src=>{if(!imgOk(src))return;const o=document.createElement('div');o.className='simv';o.innerHTML=`<img src="${src}" alt=""><button type=button class=simvx aria-label="إغلاق">✕</button>`;o.onclick=()=>o.remove();document.body.append(o)};
-const supN=()=>isA()?Object.values(S.sups||{}).filter(x=>x.lastFrom=='u'&&tm(x.at)>tm(x.aRead)).length:(S.sup1&&S.sup1.lastFrom=='a'&&tm(S.sup1.at)>tm(S.sup1.uRead)?1:0);
+const supN=()=>isA()?Object.values(S.sups||{}).filter(x=>x.lastFrom=='u'&&tm(x.at)>tm(x.aRead)).length+(!isS()&&S.sec1&&S.sec1.lastFrom=='s'&&tm(S.sec1.at)>tm(S.sec1.uRead)?1:0):(S.sup1&&S.sup1.lastFrom=='a'&&tm(S.sup1.at)>tm(S.sup1.uRead)?1:0);
 const supBadge=()=>{const n=supN();document.title=(n?'('+(n>9?'9+':n)+') ':'')+BT;document.querySelectorAll('.supb .bdg').forEach(b=>{b.hidden=!n;b.textContent=n>9?'9+':n||''})};
 const muted=()=>{try{return localStorage.getItem('supmute')=='1'}catch(e){return false}};
 let AC=null,lastBeep=0;
@@ -2593,8 +2614,11 @@ document.addEventListener('click',async e=>{
   else if(a=='peek'){const i=$('#ap_');i.type=i.type=='password'?'text':'password';b.textContent=i.type=='password'?'إظهار':'إخفاء'}
   else if(a=='out'){if(isA()&&!isS()&&admSid)deleteDoc(doc(db,'asess',admSid)).catch(()=>0);signOut(auth)}
   else if(a=='secopen'){secOpen(id)}
+  else if(a=='asecopen'){secOpen(id,'asecret')}
   else if(a=='secme'){secOpen(S.u.uid)}
   else if(a=='admdel'){await admDel(id)}
+  else if(a=='kickone'){await admKickOne(id)}
+  else if(a=='admban'){await admBan(id)}
   else if(a=='aonsave'){await aonSave()}
   else if(a=='kick'){if(!isS())return;if(!confirm('تخرّج '+id+' من كل الأجهزة دلوقتي؟'))return;try{await setDoc(doc(db,'kicks',String(id).toLowerCase()),{at:serverTimestamp(),by:low(S.u)});gToast('🚪 تم إخراجه من كل الأجهزة')}catch(x){alert('تعذّر: '+errMsg(x))}}
   else if(a=='pwreset'){if(!isS())return;if(!confirm('نبعت لينك تغيير الباسورد على '+id+'؟'))return;try{await sendPasswordResetEmail(auth,id);gToast('📧 اتبعت لينك تغيير الباسورد')}catch(x){alert('تعذّر الإرسال: '+errMsg(x))}}
@@ -2752,7 +2776,7 @@ onAuthStateChanged(auth,async u=>{
  stop(un);stop(cs);closeChat();closeSec();
  if(u&&S.wantA&&!ADMINS.includes(low(u))){S.wantA=0;await signOut(auth);return}
  const A=ADMINS.includes(low(u));S.wantA=0;
- Object.assign(S,{secs:{},sec1:null,apr:undefined,asess:{},reps:[],cmFocus:null,watch:null,cmShow:0,vl:[],apps:{},ap1:null,deleting:0,editProf:0,pfKey:'',pfPhoto:'',ready:1,u,me:null,adm:A?1:0,tab:A?'ao':'v',nav:0,cur:null,eq:null,err:'',am:0,content:[],qs:[],users:[],prog:{},allProg:{},live:{},runs:[],settings:{},pl:0,ans:{},done:0,sel:null,sup1:null,sups:{}});
+ Object.assign(S,{asecs:{},aprs:{},secs:{},sec1:null,apr:undefined,asess:{},reps:[],cmFocus:null,watch:null,cmShow:0,vl:[],apps:{},ap1:null,deleting:0,editProf:0,pfKey:'',pfPhoto:'',ready:1,u,me:null,adm:A?1:0,tab:A?'ao':'v',nav:0,cur:null,eq:null,err:'',am:0,content:[],qs:[],users:[],prog:{},allProg:{},live:{},runs:[],settings:{},pl:0,ans:{},done:0,sel:null,sup1:null,sups:{}});
  if(!u)return render();
  const r=doc(db,'users',u.uid);let mk=0;
  un.push(onSnapshot(r,s=>{
