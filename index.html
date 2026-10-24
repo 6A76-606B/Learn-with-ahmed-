@@ -187,6 +187,22 @@ main.wide{max-width:1180px}
 .tabs button:hover{transform:none!important;color:var(--t)!important}
 .tabs button.on,.tabs button.on:hover{color:var(--yt)!important}
 .tabs .ind{position:absolute;top:5px;bottom:5px;border-radius:12px;background:linear-gradient(135deg,#ffe066,#ffc300);box-shadow:0 8px 22px -10px #e8b500;transition:left .5s var(--spring),width .5s var(--spring);z-index:0}
+/* قايمة الأدمن (☰): الأقسام تحت بعض */
+.anav{margin-bottom:20px;max-width:440px}
+#app .anbtn{width:100%;justify-content:flex-start;gap:12px;padding:10px 16px;font-weight:700}
+.anbtn .tt{flex:1;text-align:start}
+.hbg{position:relative;width:20px;height:14px;flex:none}
+.hbg i{position:absolute;inset-inline:0;height:2px;border-radius:2px;background:currentColor;transition:transform .35s var(--spring),opacity .2s,top .35s var(--spring)}
+.hbg i:nth-child(1){top:0}.hbg i:nth-child(2){top:6px}.hbg i:nth-child(3){top:12px}
+.anav.open .hbg i:nth-child(1){top:6px;transform:rotate(45deg)}.anav.open .hbg i:nth-child(2){opacity:0}.anav.open .hbg i:nth-child(3){top:6px;transform:rotate(-45deg)}
+.anbtn .chv{width:16px;height:16px;flex:none;transition:transform .35s var(--spring)}
+.anav.open .anbtn .chv{transform:rotate(180deg)}
+.anlist{display:grid;grid-template-rows:0fr;visibility:hidden;transition:grid-template-rows .4s var(--ease),visibility 0s .4s}
+.anav.open .anlist{grid-template-rows:1fr;visibility:visible;transition:grid-template-rows .4s var(--ease),visibility 0s}
+.anlist>div{min-height:0;overflow:hidden;display:grid;gap:6px;padding-top:0;transition:padding-top .4s var(--ease)}
+.anav.open .anlist>div{padding-top:8px}
+#app .anlist button{justify-content:flex-start;gap:10px;font-weight:600;text-align:start;box-shadow:none}
+#app .anlist button:hover:not(:disabled){transform:none}
 /* كروت */
 .card{position:relative;background:var(--card);border:1px solid var(--ln);border-radius:20px;padding:18px;margin-bottom:12px;overflow:hidden;box-shadow:var(--sh);transition:border-color .3s,background .4s}
 .card::before{content:"";position:absolute;inset:0;border-radius:inherit;background:radial-gradient(420px circle at var(--mx,50%) var(--my,-30%),var(--spot),transparent 45%);opacity:0;transition:opacity .4s;pointer-events:none}
@@ -493,6 +509,80 @@ li.CodeMirror-hint-active{background:var(--a);color:#fff}
  #ide #split{display:none!important}
  #ide #ed{flex:1;min-height:0}
 }
+
+/* أزرار النسخ والمسح + رسالة التأكيد */
+#ide .cbtn{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--eln);background:var(--bg3);color:var(--tx);white-space:nowrap;touch-action:manipulation;transition:transform .2s var(--spring),background .2s,color .2s,border-color .2s}
+#ide .cbtn:active{transform:scale(.9)}
+#ide .cbtn.copied{animation:copyPop .6s var(--spring);background:#2fbf6f22;border-color:#2fbf6f88;color:var(--g)}
+#ide .cbtn.wiped{animation:wipeShake .45s ease;background:#ef4f5f22;border-color:#ef4f5f88;color:var(--r)}
+#ide .stopt{background:#d64545!important;border-color:#d64545!important;color:#fff!important;font-weight:700;animation:pulseR 1s ease-in-out infinite}
+#ide .stopt[hidden],#ide .resumet[hidden]{display:none}
+#ide .resumet{background:#ffd43b!important;border-color:#e8b500!important;color:#17140a!important;font-weight:700;animation:pop .4s var(--spring)}
+@keyframes copyPop{0%{transform:scale(1)}30%{transform:scale(1.22) rotate(-4deg);box-shadow:0 0 0 0 #2fbf6f88}60%{transform:scale(.96)}100%{transform:scale(1);box-shadow:0 0 0 12px #2fbf6f00}}
+@keyframes wipeShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-4px) rotate(-3deg)}40%{transform:translateX(4px) rotate(3deg)}60%{transform:translateX(-3px)}80%{transform:translateX(3px)}}
+#ide.flashc #ed .CodeMirror{animation:flashG .7s ease}
+#ide.flasho #out{animation:flashG .7s ease}
+@keyframes flashG{0%{box-shadow:inset 0 0 0 3px #2fbf6faa,inset 0 0 40px #2fbf6f33}100%{box-shadow:inset 0 0 0 3px #2fbf6f00,inset 0 0 40px #2fbf6f00}}
+#ide.flashw #ed .CodeMirror{animation:flashR .6s ease}
+@keyframes flashR{0%{box-shadow:inset 0 0 0 3px #ef4f5faa,inset 0 0 40px #ef4f5f33}100%{box-shadow:inset 0 0 0 3px #ef4f5f00,inset 0 0 40px #ef4f5f00}}
+#toast{position:fixed;left:50%;bottom:calc(46px + env(safe-area-inset-bottom));z-index:120;display:flex;align-items:center;gap:10px;padding:10px 18px;border-radius:99px;background:#101820ee;color:#fff;border:1px solid #ffffff22;backdrop-filter:blur(10px);box-shadow:0 14px 36px -10px #000a;font:600 14px "IBM Plex Sans Arabic",system-ui;direction:rtl;white-space:nowrap;opacity:0;pointer-events:none;transform:translate(-50%,24px) scale(.85);transition:opacity .25s,transform .45s var(--spring)}
+#toast.on{opacity:1;transform:translate(-50%,0) scale(1);pointer-events:auto}
+#toast .ti{display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--g);color:#fff;font-size:13px;flex:none}
+#toast.on .ti{animation:pop .5s var(--spring) .05s both}
+#toast.bad .ti{background:var(--r)}
+#toast .ta{background:#ffd43b;color:#17140a;font:700 12.5px "IBM Plex Sans Arabic",system-ui;padding:3px 12px;border:0;border-radius:99px;cursor:pointer}
+#toast .ta[hidden]{display:none}
+@media(max-width:860px){#ide .cbtn{height:32px;padding:0 9px;font-size:12.5px}#ide .ptab{gap:6px;padding-right:6px}#ide .ptab .ft{padding:0 10px}}
+
+.sb{position:relative}
+.sb .bcp{position:absolute;top:4px;inset-inline-end:4px;min-height:0!important;width:24px;height:24px;padding:0!important;border-radius:8px!important;border:0!important;background:#00000026!important;color:inherit!important;font-size:13px;line-height:1;opacity:.45;transition:opacity .2s,transform .25s var(--spring),background .2s}
+.sb:hover .bcp,.sb .bcp:focus-visible{opacity:1}
+@media(pointer:coarse){.sb .bcp{opacity:.7}}
+.sb .bcp:active{transform:scale(.85)}
+.sb:has(.bcp){padding-inline-end:34px}
+.sb .bcp.copied,.cb button.copied{animation:copyPop .6s var(--spring);background:#2fbf6f!important;color:#fff!important;opacity:1}
+.sb.cflash,.cb.cflash{animation:cflashA .8s ease}
+@keyframes cflashA{0%{box-shadow:0 0 0 3px #2fbf6faa,0 0 22px #2fbf6f66}100%{box-shadow:0 0 0 3px #2fbf6f00,0 0 22px #2fbf6f00}}
+#gtoast{position:fixed;left:50%;bottom:calc(86px + env(safe-area-inset-bottom));z-index:400;display:flex;align-items:center;gap:10px;padding:10px 18px;border-radius:99px;background:#101820ee;color:#fff;border:1px solid #ffffff22;backdrop-filter:blur(10px);box-shadow:0 14px 36px -10px #000a;font:600 14px "IBM Plex Sans Arabic",system-ui;direction:rtl;white-space:nowrap;opacity:0;pointer-events:none;transform:translate(-50%,24px) scale(.85);transition:opacity .25s,transform .45s var(--spring)}
+#gtoast.on{opacity:1;transform:translate(-50%,0) scale(1)}
+#gtoast .ti{display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--g);color:#fff;font-size:13px;flex:none}
+#gtoast.on .ti{animation:pop .5s var(--spring) .05s both}
+#gtoast.bad .ti{background:var(--r)}
+
+/* دايرة البروفايل + قايمة الحساب + نافذة الحذف */
+#app .pav{width:42px;height:42px;min-height:0;padding:0!important;border-radius:50%!important;border:2px solid var(--y)!important;overflow:hidden;display:grid;place-items:center;flex:none;background:var(--chip);font-size:19px;cursor:pointer;box-shadow:0 0 0 0 #ffd43b00;transition:transform .3s var(--spring),box-shadow .3s}
+#app .pav img{width:100%;height:100%;object-fit:cover;display:block;border-radius:0}
+#app .pav:hover{transform:scale(1.07);box-shadow:0 0 0 4px #ffd43b33}
+#app .pav:active{transform:scale(.93)}
+.pmenu{position:fixed;z-index:150;min-width:236px;max-width:calc(100vw - 16px);padding:8px;border-radius:18px;background:var(--s1);color:var(--t);border:1px solid var(--ln2);box-shadow:0 24px 60px -18px #000b;opacity:0;transform:translateY(-8px) scale(.94);transform-origin:top left;transition:opacity .18s,transform .35s var(--spring);direction:rtl}
+.pmenu.on{opacity:1;transform:none}
+.pmh{display:flex;align-items:center;gap:10px;padding:6px 8px 12px;margin-bottom:6px;border-bottom:1px solid var(--ln2)}
+.pmh img,.pmh>span{width:42px;height:42px;border-radius:50%;object-fit:cover;border:2px solid var(--y);display:grid;place-items:center;flex:none;background:var(--chip)}
+.pmh div{min-width:0}
+.pmh b{display:block;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pmh small{display:block;color:var(--m);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pmenu button{display:flex;align-items:center;gap:10px;width:100%;padding:11px 12px;border:0;border-radius:12px;background:transparent;color:inherit;font:inherit;font-size:14.5px;text-align:start;cursor:pointer;transition:background .15s,transform .2s var(--spring)}
+.pmenu button:hover{background:var(--chip)}
+.pmenu button:active{transform:scale(.97)}
+.pmenu button.dng{color:var(--r)}
+.pmenu button.dng:hover{background:#ef4f5f1a}
+.pdl{position:fixed;inset:0;z-index:300;display:grid;place-items:center;padding:18px;background:#05070bb3;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);animation:fadeIn .2s both;direction:rtl}
+.pdl.out{opacity:0;transition:opacity .2s}
+.pdlb{width:100%;max-width:400px;background:var(--s1);color:var(--t);border:1px solid var(--ln2);border-radius:24px;padding:24px 22px;box-shadow:0 40px 80px -30px #000;animation:mIn .45s var(--spring) both;text-align:center}
+.pdi{width:62px;height:62px;margin:0 auto 10px;border-radius:50%;display:grid;place-items:center;font-size:30px;background:#ef4f5f22;animation:pop .5s var(--spring) both}
+.pdlb h3{margin:0 0 8px;font-size:19px}
+.pdlb p{margin:0 0 16px;color:var(--m);line-height:1.8;font-size:14px}
+.pdlb p b{color:var(--r)}
+.pdlb label{display:block;font-size:14px;margin-bottom:4px}
+.pdlb label b{color:var(--r)}
+.pdlb input{text-align:center}
+.pdle{min-height:20px;margin:6px 0 4px;color:var(--r);font-size:13px}
+.pdla{display:flex;gap:10px;margin-top:6px}
+.pdla button{flex:1;height:46px;border-radius:14px;font:inherit;font-weight:700;font-size:15px;cursor:pointer;border:1px solid var(--ln2);transition:transform .2s var(--spring),opacity .2s,background .2s}
+.pdla button:active:not(:disabled){transform:scale(.96)}
+.pdc{background:var(--chip);color:var(--t)}
+.pdd{background:var(--r);color:#fff;border-color:var(--r)!important}
+.pdd:disabled,.pdc:disabled{opacity:.4;cursor:not-allowed}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 .fv{position:relative;margin-top:12px;border-radius:12px;overflow:hidden;background:var(--chip);aspect-ratio:4/3;max-height:75vh}
 .fv iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
@@ -810,24 +900,25 @@ header button{white-space:nowrap;flex:none}
   </div>
   <div class="frame" id="work">
   <div class="pane" id="pcode">
-   <div class="ptab"><span class="ft"><i></i>main.py</span><span id="dirty" title="بيتحفظ تلقائي"></span><span class="sp"></span><span class="hint2">Ctrl+Space اقتراحات · Ctrl+/ تعليق</span></div>
+   <div class="ptab"><span class="ft"><i></i>main.py</span><span id="dirty" title="بيتحفظ تلقائي"></span><span class="sp"></span><span class="hint2">Ctrl+Space اقتراحات · Ctrl+/ تعليق</span><button class="tbtn cbtn" id="cclr" title="مسح كل الكود">🗑 مسح الكل</button><button class="tbtn cbtn" id="ccp" title="نسخ الكود">⧉ نسخ</button></div>
    <div id="ed" dir="ltr"></div>
    <div id="kbw"><div id="kb" dir="ltr"><div id="keys"></div><div id="sn"></div></div></div>
   </div>
   <div id="split" title="اسحب لتغيير الحجم · دبل كليك يرجّعه نص ونص"></div>
   <div class="pane" id="pout">
-   <div class="ptab"><span class="ft">▸ النتيجة</span><span id="chip"></span><span class="sp"></span><button class="tbtn" id="co">نسخ</button><button class="tbtn" id="clr">مسح</button></div>
+   <div class="ptab"><span class="ft">▸ النتيجة</span><span id="chip"></span><span class="sp"></span><button class="tbtn cbtn resumet" id="resume" hidden>▶ كمّل</button><button class="tbtn cbtn stopt" id="stop2" hidden>■ إيقاف</button><button class="tbtn cbtn" id="co">⧉ نسخ</button><button class="tbtn" id="clr">مسح</button></div>
    <div id="term" dir="ltr">
     <pre id="out"></pre>
     <form id="inf" hidden><b>›</b><input id="inp" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="send" placeholder="اكتب قيمة input() واضغط Enter"><button type="submit">↵</button></form>
    </div>
   </div>
  </div></div>
+ <div id="toast" role="status" aria-live="polite"><span class="ti">✓</span><span class="tt"></span><button type="button" class="ta" hidden></button></div>
  <div id="sb"><span id="pos">Ln 1, Col 1</span><span id="ver2">Python</span><span>نسخة 22-10-B</span><span>UTF-8 · Spaces: 4</span><span class="sp"></span><span id="stt"></span></div>
 </section>
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import{getAuth,GoogleAuthProvider,signInWithPopup,signInWithRedirect,signInWithEmailAndPassword,signOut,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import{getAuth,GoogleAuthProvider,signInWithPopup,signInWithRedirect,signInWithEmailAndPassword,signOut,onAuthStateChanged,deleteUser,reauthenticateWithPopup,reauthenticateWithCredential,EmailAuthProvider}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import{getFirestore,doc,setDoc,updateDoc,addDoc,deleteDoc,collection,onSnapshot,writeBatch,serverTimestamp,query,orderBy,limit,where,getDocs,Timestamp,arrayUnion,arrayRemove}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const CFG={apiKey:"AIzaSyCrjJoGOBi83YM_ilDdWQS3J68pPsqAoLg",authDomain:"learn-with-ahmed-59b98.firebaseapp.com",projectId:"learn-with-ahmed-59b98",storageBucket:"learn-with-ahmed-59b98.firebasestorage.app",messagingSenderId:"101726829373",appId:"1:101726829373:web:1cf5cbabb3d8b168c66354"};
@@ -884,8 +975,9 @@ const lessons=()=>S.content.filter(i=>i.type=='video');
 const dn=id=>!!S.prog.done?.[id];
 const saveP=async d=>{try{await setDoc(doc(db,'progress',S.u.uid),{...d,at:serverTimestamp()},{merge:true})}catch(x){alert('تعذّر حفظ التقدّم: '+errMsg(x))}};
 
-const supBtn=()=>{const n=supN();return `<button class="s ico supb" data-a=supopen title="الدعم">${IC.chat}<b class=bdg${n?'':' hidden'}>${n>9?'9+':n||''}</b></button>`};
-const head=()=>`<header class="${isA()?'ha':''}">${brand()}${isA()?`<button class="y sm" data-a=adm title="${S.adm?'عرض كطالب':'لوحة التحكم'}">${S.adm?'👁<span class=hl> عرض كطالب</span>':'⚙️<span class=hl> لوحة التحكم</span>'}</button>`:''}${folBtn("s sm")}${supBtn()}${thm()}${(S.me?.photo||S.u.photoURL)&&!isA()?`<img class="av hide-s" data-a=editprof title="تعديل بياناتك" src="${E(S.me?.photo||S.u.photoURL)}" referrerpolicy=no-referrer alt="">`:S.u.photoURL?`<img class="av hide-s" src="${E(S.u.photoURL)}" referrerpolicy=no-referrer alt="">`:''}<button class="s sm" data-a=out>خروج</button></header>`;
+const supBtn=()=>{const n=supN(),on=isA()&&S.adm&&S.tab=='ai';return `<button class="${on?'y':'s'} ico supb" data-a=supopen title="${isA()?'المحادثات':'الدعم'}">${IC.chat}<b class=bdg${n?'':' hidden'}>${n>9?'9+':n||''}</b></button>`};
+const head=()=>`<header class="${isA()?'ha':''}">${brand()}${isA()?`<button class="y sm" data-a=adm title="${S.adm?'عرض كطالب':'لوحة التحكم'}">${S.adm?'👁<span class=hl> عرض كطالب</span>':'⚙️<span class=hl> لوحة التحكم</span>'}</button>`:''}${folBtn("s sm")}${supBtn()}${thm()}${isA()?(S.u.photoURL?`<img class="av hide-s" src="${E(S.u.photoURL)}" referrerpolicy=no-referrer alt="">`:'')+'<button class="s sm" data-a=out>خروج</button>':pavBtn()}</header>`;
+const pavBtn=()=>{const p=safe(S.me?.photo||S.u.photoURL||'');return `<button type=button class=pav data-a=pmenu title="حسابي" aria-label="حسابي" aria-haspopup=menu>${p?`<img src="${E(p)}" referrerpolicy=no-referrer alt="">`:'<span>👤</span>'}</button>`};
 
 const stuTabs=()=>{const c=cfg(),A=isA();return [['v','🎬 الدروس'],(c.files||A)&&['f','📎 الملفات'],(c.quiz||A)&&['q','📝 الاختبار'],(c.editor||A)&&['e','💻 المحرر']].filter(Boolean)};
 const stu=()=>{
@@ -923,9 +1015,16 @@ const sm=(a,id,t,c='s',dis)=>`<button class="${c} sm" data-a=${a} data-id="${E(i
 const sCard=(i,n,t)=>`<div class="card stat"><span class=si>${i}</span><b data-count=${n}>${n}</b><span class=m>${t}</span></div>`;
 const codev=(code,out)=>`<div class=codev><div class=hd><span>CODE</span><span>OUTPUT</span></div><pre class=tok>${hl(code||'')}</pre><pre>${E(out||'')||'<span style="opacity:.5">— مفيش ناتج —</span>'}</pre></div>`;
 const runTag=r=>r.ok?'<span class="tag okt">✓ صح</span>':`<span class="tag ert">✕ خطأ${r.line?' · سطر '+r.line:''}</span>`;
+/* قايمة الأدمن: زرار ☰ بيفتح الأقسام تحت بعض */
+const ANAV=[['av','🎬 الفيديوهات'],['af','📎 الملفات'],['ao','📊 نظرة عامة'],['as','👥 الطلاب'],['ae','💻 نشاط المحرر'],['aq','❓ الأسئلة'],['at','📢 رسايل جماعية'],['ag','⚙️ الإعدادات']];
+const anav=()=>{
+ const cur=(ANAV.find(t=>t[0]==S.tab)||(S.tab=='ai'?['ai','💬 المحادثات']:ANAV[0]))[1];
+ return `<nav class="anav${S.nav?' open':''}"><button type=button class="s anbtn" data-a=navtog aria-expanded="${S.nav?'true':'false'}" aria-controls=anl><span class=hbg aria-hidden=true><i></i><i></i><i></i></span><span class=tt>${cur}</span><svg class=chv viewBox="0 0 24 24" fill=none stroke=currentColor stroke-width=2.5 stroke-linecap=round stroke-linejoin=round aria-hidden=true><path d="m6 9 6 6 6-6"/></svg></button><div class=anlist id=anl><div>${ANAV.map(([k,t])=>`<button type=button class="${S.tab==k?'on':'s'}" data-a=tab data-id=${k}>${t}</button>`).join('')}</div></div></nav>`};
+const navPaint=()=>{const e=document.querySelector('.anav');if(!e)return;e.classList.toggle('open',!!S.nav);e.querySelector('.anbtn')?.setAttribute('aria-expanded',S.nav?'true':'false')};
 const admin=()=>{
  const U=S.users.filter(notA),L=lessons();
- let h=tabs([['ao','📊 نظرة عامة'],['as','👥 الطلاب'],['ae','💻 نشاط المحرر'],['ac','🎬 المحتوى'],['aq','❓ الأسئلة'],['at','💬 الدعم'+(supN()?` <b class=bdg>${supN()}</b>`:'')],['ag','⚙️ الإعدادات']]);
+ let h=anav();
+   const grp=(t,L)=>L.length?`<h4 class=sec>${t} (${L.length})</h4>`+L.map((i,n)=>`<div class="card row wr"><span class=g>${ic[i.type]||'📄'} ${E(i.title)}</span>${sm('cu',i.id,'↑','s',!n)}${sm('cd',i.id,'↓','s',n==L.length-1)}${i.type=='video'?sm('pv',i.id,'👁 معاينة'):''}${sm('ren',i.id,'✏️ الاسم')}${i.path||i.data?'':sm('reu',i.id,'🔗 الرابط')}${sm('delc',i.id,'حذف','r')}</div>`).join(''):'';
  const pc=u=>{const p=S.allProg[u.id]||{};return L.length?Math.round(L.filter(i=>p.done?.[i.id]).length/L.length*100):0};
  if(S.tab=='ao'){
   const act=Object.values(S.live).filter(x=>Date.now()-ms(x)<6e5).length,avg=U.length?Math.round(U.reduce((a,u)=>a+pc(u),0)/U.length):0;
@@ -949,21 +1048,27 @@ const admin=()=>{
    +`<div class=acts2>${lv?sm('openc',sel.id,'📂 افتح في محرري'):''}${sm('delruns',sel.id,'🗑 مسح سجل الطالب','r')}</div></div>`
    +`<h4 class=sec>السجل (${R.length})</h4>`+(R.map(r=>`<details class=card data-o="${E(r.id)}"${S.open.has(r.id)?' open':''}><summary>${runTag(r)}<code>${E((r.code||'').split('\n').find(l=>l.trim())||'')}</code><span class=g></span><span class=m>${rel(ms(r))}</span></summary>${S.open.has(r.id)?codev(r.code,r.out):''}</details>`).join('')||empty('مفيش سجل.','🗂'))
    +`</div></div>`;
- }else if(S.tab=='ac'){
-  const grp=(t,L)=>L.length?`<h4 class=sec>${t} (${L.length})</h4>`+L.map((i,n)=>`<div class="card row wr"><span class=g>${ic[i.type]||'📄'} ${E(i.title)}</span>${sm('cu',i.id,'↑','s',!n)}${sm('cd',i.id,'↓','s',n==L.length-1)}${i.type=='video'?sm('pv',i.id,'👁 معاينة'):''}${sm('ren',i.id,'✏️ الاسم')}${i.path||i.data?'':sm('reu',i.id,'🔗 الرابط')}${sm('delc',i.id,'حذف','r')}</div>`).join(''):'';
-  h+=`<div class=card data-keep=ac><h3>🎬 درس فيديو جديد</h3><p class=m style="margin-bottom:6px">الصق لينك يوتيوب أو تيك توك، والفيديو هيتعرض جوه المنصة بمشغّل المنصة من غير ما يبان إنه من يوتيوب أو تيك توك.</p><input id=ct placeholder="عنوان الدرس"><input id=cl dir=ltr placeholder="https://youtu.be/…  أو  https://www.tiktok.com/@user/video/…"><div id=cld class=vdet></div><button class=y data-a=addv>➕ إضافة الدرس</button>
-<hr class=sp2><h3>📎 ملف للطلاب (صورة أو PDF)</h3><p class=m style="margin-bottom:6px">الصق لينك Google Drive، أو اختار صورة أو PDF صغير من جهازك. الصور بتتصغّر لوحدها. لو PDF أكبر من 700 كيلو ارفعه على Google Drive، وخلّي المشاركة "أي حد معاه اللينك"، والصق اللينك هنا.</p><input id=ft placeholder="اسم الملف"><input id=fl dir=ltr placeholder="https://drive.google.com/file/d/…"><div class=m style="text-align:center;margin:4px 0 8px">أو</div><input id=cf type=file accept="image/*,application/pdf"><div id=fld class=vdet></div><div class=row style="margin-top:4px"><button class=s data-a=addf>➕ إضافة الملف</button><span id=pg class="m g"></span></div></div>`
-   +`<div data-live>${grp('🎬 الدروس',S.content.filter(i=>i.type=='video'))+grp('📎 الملفات',S.content.filter(i=>i.type!='video'))||empty()}</div>`;
+ }else if(S.tab=='av'){
+  const V=S.content.filter(i=>i.type=='video');
+  h+=`<div class=card data-keep=av><h3>🎬 درس فيديو جديد</h3><p class=m style="margin-bottom:6px">الصق لينك يوتيوب أو تيك توك، والفيديو هيتعرض جوه المنصة بمشغّل المنصة من غير ما يبان إنه من يوتيوب أو تيك توك.</p><input id=ct placeholder="عنوان الدرس"><input id=cl dir=ltr placeholder="https://youtu.be/…  أو  https://www.tiktok.com/@user/video/…"><div id=cld class=vdet></div><button class=y data-a=addv>➕ إضافة الدرس</button></div>`
+   +`<div data-live>${grp('🎬 الدروس',V)||empty('لسه مفيش دروس. ضيف أول درس من فوق.','🎬')}</div>`;
   const pv=S.content.find(x=>x.id==S.pv);
   if(pv)h+=`<div data-keep="pv-${E(pv.id)}"><div class=modal data-a=pvclose><div class="mbox pvbox${tt(pv.url)||/shorts\//.test(pv.url||'')?' vt':''}" data-a=noop><button type=button class="gh sm ico mx" data-a=pvclose style="z-index:2">✕</button><h3 style="margin:0 40px 14px 0;font:700 18px var(--disp)">👁 ${E(pv.title)}</h3>${player(pv)}<p class=m style="margin-top:12px">ده بالظبط اللي الطالب هيشوفه.</p></div></div></div>`;
+ }else if(S.tab=='af'){
+  const F=S.content.filter(i=>i.type!='video');
+  h+=`<div class=card data-keep=af><h3>📎 ملف للطلاب (صورة أو PDF)</h3><p class=m style="margin-bottom:6px">الصق لينك Google Drive، أو اختار صورة أو PDF صغير من جهازك. الصور بتتصغّر لوحدها. لو PDF أكبر من 700 كيلو ارفعه على Google Drive، وخلّي المشاركة "أي حد معاه اللينك"، والصق اللينك هنا.</p><input id=ft placeholder="اسم الملف"><input id=fl dir=ltr placeholder="https://drive.google.com/file/d/…"><div class=m style="text-align:center;margin:4px 0 8px">أو</div><input id=cf type=file accept="image/*,application/pdf"><div id=fld class=vdet></div><div class=row style="margin-top:4px"><button class=s data-a=addf>➕ إضافة الملف</button><span id=pg class="m g"></span></div></div>`
+   +`<div data-live>${grp('📎 الملفات',F)||empty('لسه مفيش ملفات. ضيف أول ملف من فوق.','📎')}</div>`;
  }else if(S.tab=='at'){
+  const SC=(S.sched||[]).slice().sort((a,b)=>tm(a.when)-tm(b.when)),UT=U.filter(u=>!u.banned);
+  const bcCard=`<div class=card data-keep="bc-${UT.length}"><h3>📢 رسالة جماعية / مجدولة</h3><div class=bcf><select id=bc_to><option value="*">كل الطلاب (${UT.length})</option>${UT.map(u=>`<option value="${E(u.id)}">${E(u.name||u.email)}</option>`).join('')}</select><textarea id=bc_tx rows=3 maxlength=2000 dir=auto placeholder="نص الرسالة…"></textarea><label class=m for=bc_at>وقت الإرسال (سيبه فاضي لو عايز تبعت دلوقتي)</label><input id=bc_at type=datetime-local><button type=button class=y data-a=bcsend>إرسال / جدولة</button></div><p class=m style="margin:8px 0 0">⚠️ الرسايل المجدولة بتتبعت من متصفحك، فلازم الموقع يكون مفتوح عندك (أي تبويب) وقت الإرسال.</p></div>`;
+  const schedList=(SC.length?`<h4 class=sec>⏰ رسايل مجدولة (${SC.length})</h4>`+SC.map(x=>`<div class="card row"><div class=g><b>${x.to=='*'?'كل الطلاب':E((S.users.find(u=>u.id==x.to)||{}).name||'طالب')}</b><div class=m dir=auto>${E((x.text||'').slice(0,90))}</div><div class=m>🕒 ${E(new Date(tm(x.when)).toLocaleString('ar-EG'))}</div></div>${sm('schdel',x.id,'إلغاء','r')}</div>`).join(''):'');
+  h+=`<p class=m style="margin:0 2px 10px">ابعت رسالة لكل الطلاب أو لطالب واحد، دلوقتي أو في وقت تحدده. وردود الطلاب بتوصلك في المحادثات من زرار 💬 اللي فوق.</p>${bcCard}<div data-live>${schedList}</div>`;
+ }else if(S.tab=='ai'){
   const L=Object.values(S.sups||{}).sort((a,b)=>tm(b.at)-tm(a.at));
-  const up=L.filter(x=>x.st=='done'&&x.rate=='up').length,dw=L.filter(x=>x.st=='done'&&x.rate=='down').length,SC=(S.sched||[]).slice().sort((a,b)=>tm(a.when)-tm(b.when)),UT=U.filter(u=>!u.banned);
-  const bcCard=`<div class=card data-keep="bc-${UT.length}"><h3>📢 رسالة جماعية / مجدولة</h3><div class=bcf><select id=bc_to><option value="*">كل الطلاب (${UT.length})</option>${UT.map(u=>`<option value="${E(u.id)}">${E(u.name||u.email)}</option>`).join('')}</select><textarea id=bc_tx rows=3 maxlength=2000 dir=auto placeholder="نص الرسالة…"></textarea><label class=m for=bc_at>وقت الإرسال (سيبه فاضي لو عايز تبعت دلوقتي)</label><input id=bc_at type=datetime-local><button type=button class=y data-a=bcsend>إرسال / جدولة</button></div><p class=m style="margin:8px 0 0">⚠️ الرسايل المجدولة بتتبعت من متصفحك، فلازم الموقع يكون مفتوح عندك (أي تبويب) وقت الإرسال.</p></div>`
-   +(SC.length?`<h4 class=sec>⏰ رسايل مجدولة (${SC.length})</h4>`+SC.map(x=>`<div class="card row"><div class=g><b>${x.to=='*'?'كل الطلاب':E((S.users.find(u=>u.id==x.to)||{}).name||'طالب')}</b><div class=m dir=auto>${E((x.text||'').slice(0,90))}</div><div class=m>🕒 ${E(new Date(tm(x.when)).toLocaleString('ar-EG'))}</div></div>${sm('schdel',x.id,'إلغاء','r')}</div>`).join(''):''),
-   rateLine=up+dw?`<p class=m style="margin:0 2px 10px">⭐ رضا الطلاب عن الدعم: 👍 ${up} · 👎 ${dw}</p>`:'';
+  const up=L.filter(x=>x.st=='done'&&x.rate=='up').length,dw=L.filter(x=>x.st=='done'&&x.rate=='down').length;
+  const rateLine=up+dw?`<p class=m style="margin:0 2px 10px">⭐ رضا الطلاب عن الدعم: 👍 ${up} · 👎 ${dw}</p>`:'';
   const sf=S.sf||'all',LF=L.filter(x=>sf=='all'||(x.st||'open')==sf);
-  h+=`<p class=m style="margin:0 2px 10px">رسايل الطلاب بتوصلك هنا لحظة بلحظة. اضغط على أي محادثة عشان تردّ. ولو عايز تبدأ إنت، من تبويب الطلاب اضغط 💬 رسالة.</p>${bcCard}${rateLine}<div class=sfl>${[['all','الكل'],['open',STL.open],['follow',STL.follow],['done',STL.done]].map(([k,t])=>`<button type=button class="s${sf==k?' on':''}" data-a=sf data-id=${k}>${t}${k=='all'?' ('+L.length+')':' ('+L.filter(x=>(x.st||'open')==k).length+')'}</button>`).join('')}</div><div data-live>`
+  h+=`<div data-keep="ai"><p class=m style="margin:0 2px 10px">رسايل الطلاب بتوصلك هنا لحظة بلحظة. اضغط على أي محادثة عشان تردّ. ولو عايز تبدأ إنت، من تبويب الطلاب اضغط 💬 رسالة.</p></div><div data-live>${rateLine}<div class=sfl>${[['all','الكل'],['open',STL.open],['follow',STL.follow],['done',STL.done]].map(([k,t])=>`<button type=button class="s${sf==k?' on':''}" data-a=sf data-id=${k}>${t}${k=='all'?' ('+L.length+')':' ('+L.filter(x=>(x.st||'open')==k).length+')'}</button>`).join('')}</div>`
    +(LF.map(x=>{const un=x.lastFrom=='u'&&tm(x.at)>tm(x.aRead),p=safe(x.photo||'');return `<button class="s ls" data-a=chat data-id="${E(x.id)}">${p?`<img class=av src="${E(p)}" referrerpolicy=no-referrer alt="">`:'<span class=av style="display:grid;place-items:center">👤</span>'}<span class=g><b>${E(x.name||x.email||'طالب')}</b> <span class=m style="font-size:12px">${seenTxt(x.id)}</span><small class=m dir=auto style="display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${x.lastFrom=='a'?'أنت: ':''}${E(x.last||'')}</small></span>${x.st&&x.st!='open'?`<span class=tag>${STL[x.st]||''}${x.st=='done'&&x.rate?(x.rate=='up'?' 👍':' 👎'):''}</span>`:''}<span class=m>${rel(tm(x.at))}</span>${un?'<b class=bdg>جديد</b>':''}</button>`}).join('')||empty('لسه مفيش رسايل دعم. أول ما طالب يبعت هتظهر هنا.','💬'))+`</div>`;
  }else if(S.tab=='aq'){
   const e=S.qs.find(x=>x.id==S.eq),v=e||{q:'',o:['','','',''],a:0};
@@ -1056,8 +1161,81 @@ const onbSave=async()=>{
  }catch(x){if(er)er.textContent='تعذّر الحفظ: '+errMsg(x)}
  finally{if(bt)bt.disabled=false}
 };
+
+/* ===== قايمة الحساب (دايرة البروفايل) + حذف الحساب ===== */
+let pm=null;
+const pmOut=e=>{if(pm&&!pm.contains(e.target)&&!e.target.closest('[data-a=pmenu]'))closePM()};
+const pmKey=e=>{if(e.key=='Escape')closePM()};
+const closePM=()=>{if(!pm)return;const e=pm;pm=null;e.classList.remove('on');setTimeout(()=>e.remove(),200);document.removeEventListener('pointerdown',pmOut,true);document.removeEventListener('keydown',pmKey,true);removeEventListener('resize',closePM)};
+const openPM=btn=>{
+ if(pm){closePM();return}
+ const nm=S.me?.name||S.u.displayName||'طالب',em=S.u.email||'',ph=safe(S.me?.photo||S.u.photoURL||'');
+ const d=document.createElement('div');d.className='pmenu';d.setAttribute('role','menu');
+ d.innerHTML=`<div class=pmh>${ph?`<img src="${E(ph)}" referrerpolicy=no-referrer alt="">`:'<span>👤</span>'}<div><b dir=auto>${E(nm)}</b><small dir=ltr>${E(em)}</small></div></div>`
+  +`<button type=button role=menuitem data-p=name>✏️ تعديل الاسم</button><button type=button role=menuitem data-p=photo>📷 تغيير الصورة</button><button type=button role=menuitem data-p=out>🚪 تسجيل خروج</button><button type=button role=menuitem class=dng data-p=del>🗑 حذف الحساب</button>`;
+ document.body.append(d);
+ const r=btn.getBoundingClientRect(),w=d.offsetWidth;
+ d.style.top=(r.bottom+8)+'px';d.style.left=Math.max(8,Math.min(r.left,innerWidth-w-8))+'px';
+ requestAnimationFrame(()=>d.classList.add('on'));
+ d.onclick=e=>{
+  const b=e.target.closest('[data-p]');if(!b)return;const k=b.dataset.p;closePM();
+  if(k=='name'){S.editProf=1;S.pfKey='';render();setTimeout(()=>{const i=$('#onb_nm');if(i){i.focus();i.select()}},120)}
+  else if(k=='photo'){S.editProf=1;S.pfKey='';render();setTimeout(()=>$('#onb_fi')?.click(),60)}
+  else if(k=='out')signOut(auth);
+  else if(k=='del')openDel();
+ };
+ pm=d;
+ document.addEventListener('pointerdown',pmOut,true);document.addEventListener('keydown',pmKey,true);addEventListener('resize',closePM);
+};
+const reauth=async()=>{
+ const u=auth.currentUser,pid=u.providerData[0]?.providerId;
+ if(pid=='password'){const pw=prompt('اكتب كلمة السر بتاعتك للتأكيد');if(!pw)throw Object.assign(new Error('تم الإلغاء'),{code:'cancel'});await reauthenticateWithCredential(u,EmailAuthProvider.credential(u.email,pw))}
+ else await reauthenticateWithPopup(u,new GoogleAuthProvider());
+};
+const delAccount=async()=>{
+ const u=auth.currentUser,id=u.uid;
+ if(Date.now()-Date.parse(u.metadata.lastSignInTime||0)>240000)await reauth();
+ S.deleting=1;render();
+ try{
+  /* مستند الطالب الأول: لو اتمنع مفيش حاجة اتمسحت */
+  await deleteDoc(doc(db,'users',id));
+ }catch(x){S.deleting=0;render();throw x}
+ const rm=async q=>{try{const s=await getDocs(q);await Promise.allSettled(s.docs.map(d=>deleteDoc(d.ref)))}catch(x){}};
+ const one=async r=>{try{await deleteDoc(r)}catch(x){}};
+ await rm(query(collection(db,'comments'),where('uid','==',id)));
+ await rm(query(collection(db,'runs'),where('uid','==',id)));
+ try{const s=await getDocs(collection(db,'support',id,'msgs'));await Promise.allSettled(s.docs.filter(d=>d.data().from=='u').map(d=>deleteDoc(d.ref)))}catch(x){}
+ await one(doc(db,'support',id));await one(doc(db,'live',id));await one(doc(db,'progress',id));await one(doc(db,'presence',id));
+ try{await deleteUser(auth.currentUser)}
+ catch(x){
+  if(x?.code=='auth/requires-recent-login'){try{await reauth();await deleteUser(auth.currentUser)}catch(y){S.deleting=0;await signOut(auth);alert('اتمسحت بياناتك، لكن تعذّر حذف حساب الدخول نفسه. ادخل تاني وجرّب مرة كمان.');return}}
+  else{S.deleting=0;await signOut(auth);alert('اتمسحت بياناتك، لكن تعذّر حذف حساب الدخول نفسه: '+errMsg(x));return}
+ }
+ try{localStorage.removeItem('py-code')}catch(x){}
+ S.deleting=0;
+ gToast('✓ تم حذف حسابك نهائياً');
+};
+const openDel=()=>{
+ const o=document.createElement('div');o.className='pdl';
+ o.innerHTML=`<div class=pdlb role=dialog aria-modal=true><div class=pdi>🗑</div><h3>حذف الحساب نهائياً</h3><p>هيتمسح حسابك وتقدّمك ومحادثات الدعم وتعليقاتك وسجل المحرر. <b>مفيش رجوع بعد كده.</b></p><label for=pdl_in>للتأكيد اكتب كلمة <b>حذف</b></label><input id=pdl_in autocomplete=off dir=auto placeholder="اكتب: حذف"><div class=pdle id=pdl_er></div><div class=pdla><button type=button class=pdc>إلغاء</button><button type=button class=pdd disabled>حذف نهائي</button></div></div>`;
+ document.body.append(o);
+ const inp=o.querySelector('#pdl_in'),dd=o.querySelector('.pdd'),cc=o.querySelector('.pdc'),er=o.querySelector('#pdl_er');let busy=0;
+ const close=()=>{if(busy)return;o.classList.add('out');document.removeEventListener('keydown',kk,true);setTimeout(()=>o.remove(),200)};
+ const kk=e=>{if(e.key=='Escape')close()};document.addEventListener('keydown',kk,true);
+ inp.oninput=()=>{dd.disabled=inp.value.trim()!=='حذف';er.textContent=''};
+ inp.onkeydown=e=>{if(e.key=='Enter'&&!dd.disabled)dd.click()};
+ cc.onclick=close;o.onclick=e=>{if(e.target===o)close()};
+ dd.onclick=async()=>{
+  if(inp.value.trim()!=='حذف')return;
+  busy=1;dd.disabled=true;cc.disabled=true;inp.disabled=true;dd.textContent='جاري الحذف…';er.textContent='';
+  try{await delAccount();busy=0;document.removeEventListener('keydown',kk,true);o.remove()}
+  catch(x){busy=0;cc.disabled=false;inp.disabled=false;dd.textContent='حذف نهائي';dd.disabled=inp.value.trim()!=='حذف';er.textContent=x?.code=='cancel'?'اتلغى الحذف.':x?.code=='auth/popup-closed-by-user'||x?.code=='auth/cancelled-popup-request'?'لازم تأكّد الدخول عشان تحذف الحساب.':'تعذّر حذف الحساب: '+errMsg(x)}
+ };
+ setTimeout(()=>inp.focus(),120);
+};
 const view=()=>!S.ready?spin
  :!S.u?login()
+ :S.deleting?'<div class="hero rv"><div class=ic>🗑</div><h1>جاري حذف حسابك…</h1><p class=m>استنى لحظات وماتقفلش الصفحة.</p></div>'
  :S.err&&!S.me?.banned?`<div class="hero rv"><div class=ic>⚠️</div><h1>حصلت مشكلة</h1><p class=m style="margin:8px 0 18px">${E(S.err)}</p><button class=s data-a=out>خروج</button></div>`
  :!S.me?spin
  :S.me.banned?'<div class="hero rv"><div class=ic>🔒</div><h1>تم إيقاف حسابك</h1><p class=m style="margin:8px 0 18px">تواصل مع الأدمن لو شايف إن ده بالغلط.</p><button class=s data-a=out>خروج</button></div>'
@@ -1385,7 +1563,7 @@ const hint=c=>{
  return list.length?{list,from:CodeMirror.Pos(p.line,p.ch-pre.length),to:p}:undefined;
 };
 
-let pyLt=0,legacy=0,cm,w,ready=0,busy=0,failed=0,wait=0,runCode='',inputs=[],errLn=-1,pend=0,isAuto=0,tmo=0,buf=null,bt=0,ver='',lastFail=0,auto=1;
+let pyLt=0,legacy=0,cm,w,ready=0,busy=0,failed=0,wait=0,runCode='',inputs=[],errLn=-1,pend=0,isAuto=0,tmo=0,buf=null,bt=0,ver='',lastFail=0,auto=1,heldCode=null,stopped=0;
 try{auto=localStorage.getItem('py-auto')!=='0'}catch(e){}
 const AUTO_MS=5000,DEB=550;
 const o=$('#out'),inf=$('#inf'),inp=$('#inp'),coarse=matchMedia('(pointer:coarse)').matches,I=$('#ide');
@@ -1397,7 +1575,7 @@ const mark=l=>{clearErr();if(l>0&&l<=cm.lineCount()){errLn=l-1;cm.addLineClass(e
 const chip=(c,t)=>{const h=$('#chip');h.className=c;h.textContent=t};
 const stat=()=>{
  $('#stt').textContent=busy&&!isAuto?'⏳ شغّال…':wait?'⌨ مستني إدخال تحت':ready?(auto?'⚡ تشغيل تلقائي وإنت بتكتب':'جاهز · اضغط ▶ أو Ctrl+Enter'):failed?'⚠ فشل التحميل — اضغط ▶ للمحاولة تاني':'⏳ جاري تجهيز أحدث إصدار من بايثون…';
- $('#run').disabled=!(ready||failed)||(busy&&!isAuto);$('#run').hidden=busy&&!isAuto;$('#stop').hidden=!(busy&&!isAuto);
+ $('#run').disabled=!(ready||failed)||(busy&&!isAuto);$('#run').hidden=busy&&!isAuto;$('#stop').hidden=!(busy&&!isAuto);$('#stop2').hidden=!(busy&&!isAuto);$('#resume').hidden=!(stopped&&!busy&&!wait);
  inf.hidden=!wait;I.classList.toggle('busy',!!(busy&&!isAuto));I.classList.toggle('auto',!!auto);
  if(busy&&!isAuto)chip('run','⏳ شغّال…');
 };
@@ -1409,7 +1587,7 @@ const boot=()=>{
  try{w=new Worker(URL.createObjectURL(new Blob([src],{type:'text/javascript'})),legacy?undefined:{type:'module'})}catch(x){if(!legacy){legacy=1;return boot()}failed=1;out('المتصفح ده مش بيشغّل بايثون — حدّث كروم وجرّب تاني.\n','e');stat();return}
  w.onerror=e=>{if(!ready&&!legacy){e.preventDefault?.();legacy=1;boot();return}failed=1;busy=0;flush();out('تعذّر تحميل بايثون — تأكد من الاتصال بالإنترنت.\n','e');stat()};
  w.onmessage=({data:d})=>{
-  if(d.ready){clearTimeout(pyLt);ready=1;ver=d.ver;$('#ver').textContent='Python '+ver;$('#ver2').textContent='Python '+ver;if(pend||auto){pend=0;setTimeout(()=>run(1),0)}}
+  if(d.ready){clearTimeout(pyLt);ready=1;ver=d.ver;$('#ver').textContent='Python '+ver;$('#ver2').textContent='Python '+ver;if(pend==2){pend=0;setTimeout(()=>run(),0)}else if(pend||auto){pend=0;if(cm.getValue()!==heldCode)setTimeout(()=>run(1),0)}}
   if(d.bad){if(!legacy){legacy=1;clearTimeout(pyLt);boot();return}failed=1}
   if(d.o!=null)out((d.fail&&!endNL?'\n':'')+d.o,d.e==1?'e':d.e==2?'i':'');
   if(d.line)mark(d.line);
@@ -1426,16 +1604,16 @@ const boot=()=>{
  };
 };
 const go=()=>{
- clearErr();wait=0;busy=1;endNL=1;I.classList.remove('err');o.classList.toggle('anim',!isAuto);
+ clearErr();wait=0;busy=1;stopped=0;endNL=1;I.classList.remove('err');o.classList.toggle('anim',!isAuto);
  buf=document.createDocumentFragment();bt=setTimeout(flush,isAuto?400:120);I.classList.add('stale');stat();
  w.postMessage({code:runCode,inputs});clearTimeout(tmo);
- if(isAuto)tmo=setTimeout(()=>{if(!busy)return;flush();o.textContent='';out('⏱ الكود أخد وقت طويل — غالباً فيه لوب مش بيخلص (زي while True).\nصلّحه أو اضغط ▶ لتشغيله يدوي من غير حد زمني.\n','e');chip('bad','⏱ وقت طويل');I.classList.add('err');boot()},AUTO_MS);
+ if(isAuto)tmo=setTimeout(()=>{if(!busy||!isAuto)return;isAuto=0;flush();o.classList.remove('anim');chip('run','⏳ شغّال…');stat();say('⏳ الكود لسه شغّال — اضغط ■ إيقاف لما تحب')},AUTO_MS);
 };
 const run=(a=0)=>{
  if(!cm)return;
- if(busy){if(a)pend=1;return}
+ if(busy){if(a&&isAuto)pend=1;return}
  if(failed){boot();return}
- if(!ready){pend=1;return}
+ if(!ready){pend=a?1:2;return}
  runCode=cm.getValue();
  if(a&&!runCode.trim()){o.textContent='';chip('','');clearErr();I.classList.remove('err');return}
  isAuto=a;if(!a){inputs=[];inp.value=''}
@@ -1444,7 +1622,7 @@ const run=(a=0)=>{
 /* سجلّ المحرر للأدمن */
 let lt,lastHist='';
 const logRun=(ok,line)=>{
- if(!S.u||isA()||!S.me||S.me.banned)return;
+ if(!S.u||S.deleting||isA()||!S.me||S.me.banned)return;
  const code=runCode.slice(0,20000),txt=o.innerText.slice(0,5000);
  clearTimeout(lt);lt=setTimeout(async()=>{
   const d={uid:S.u.uid,name:(S.me?.name||S.u.displayName||'').slice(0,200),email:S.u.email||'',code,out:txt,ok:!!ok,line:line||0,at:serverTimestamp()};
@@ -1466,6 +1644,24 @@ const SN=[['print','print(|)'],['input','input("|")'],['def','def |():\n    '],[
 const download=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([cm.getValue()],{type:'text/plain'}));a.download='main.py';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000)};
 const fsEl=()=>document.fullscreenElement||document.webkitFullscreenElement;
 const setFs=on=>{const d=document.documentElement;try{if(on&&!fsEl())(d.requestFullscreen||d.webkitRequestFullscreen).call(d);else if(!on&&fsEl())(document.exitFullscreen||document.webkitExitFullscreen).call(document)}catch(e){}};
+
+let tT;
+const toast=(t,o={})=>{const e=$('#toast'),a=e.querySelector('.ta');e.querySelector('.tt').textContent=t;e.querySelector('.ti').textContent=o.bad?'!':(o.icon||'✓');e.classList.toggle('bad',!!o.bad);
+ if(o.act){a.hidden=false;a.textContent=o.act;a.onclick=()=>{o.fn();e.classList.remove('on')}}else{a.hidden=true;a.onclick=null}
+ e.classList.remove('on');void e.offsetWidth;e.classList.add('on');clearTimeout(tT);tT=setTimeout(()=>e.classList.remove('on'),o.ms||2000)};
+const anim=(b,c,f)=>{if(b){b.classList.remove(c);void b.offsetWidth;b.classList.add(c);setTimeout(()=>b.classList.remove(c),700)}if(f){I.classList.remove(f);void I.offsetWidth;I.classList.add(f);setTimeout(()=>I.classList.remove(f),750)}};
+const copyText=async t=>{try{await navigator.clipboard.writeText(t);return 1}catch(e){}
+ try{const a=document.createElement('textarea');a.value=t;a.setAttribute('readonly','');a.style.cssText='position:fixed;top:0;left:0;opacity:0';document.body.append(a);a.select();a.setSelectionRange(0,a.value.length);const ok=document.execCommand('copy');a.remove();return ok}catch(e){return 0}};
+const doCopy=async(txt,btns,flash,okMsg,emptyMsg)=>{
+ if(!txt.trim()){toast(emptyMsg,{bad:1});return}
+ if(await copyText(txt)){btns.forEach(b=>b&&anim(b,'copied'));anim(null,'',flash);vib();toast(okMsg)}else toast('تعذّر النسخ',{bad:1})};
+const copyCode=()=>doCopy(cm.getValue(),[$('#ccp'),$('#cp')],'flashc','✓ تم نسخ الكود','مفيش كود تنسخه');
+const copyOut=()=>doCopy(o.innerText,[$('#co')],'flasho','✓ تم نسخ النتيجة','مفيش نتيجة تنسخها');
+const clearCode=()=>{
+ const prev=cm.getValue();
+ if(!prev.length){toast('الكود فاضي أصلاً',{bad:1});return}
+ inputs=[];inp.value='';cm.setValue('');clearErr();anim($('#cclr'),'wiped','flashw');vib();cm.focus();
+ toast('🗑 تم مسح كل الكود',{icon:'✓',act:'تراجع',ms:4500,fn:()=>{cm.setValue(prev);cm.focus()}})};
 const initUi=()=>{
  const setMobileView=view=>{
   const result=view==='result';
@@ -1501,10 +1697,10 @@ const initUi=()=>{
  if(!(document.fullscreenEnabled||document.webkitFullscreenEnabled))$('#fs').hidden=true;
  $('#fs').onclick=()=>setFs(!fsEl());
  ['fullscreenchange','webkitfullscreenchange'].forEach(n=>document.addEventListener(n,()=>setTimeout(()=>cm.refresh(),100)));
- $('#cp').onclick=async()=>{try{await navigator.clipboard.writeText(cm.getValue());say('✓ اتنسخ الكود')}catch(e){say('تعذّر النسخ')}};
- $('#ps').onclick=async()=>{try{cm.replaceSelection(await navigator.clipboard.readText());cm.focus()}catch(e){say('اضغط مطوّلاً جوه المحرر والصق')}};
+ $('#cp').onclick=copyCode;$('#ccp').onclick=copyCode;$('#cclr').onclick=clearCode;
+ $('#ps').onclick=async()=>{try{cm.replaceSelection(await navigator.clipboard.readText(),'end','paste');cm.focus()}catch(e){say('اضغط مطوّلاً جوه المحرر والصق')}};
  $('#sh').onclick=()=>navigator.share?navigator.share({title:'main.py',text:cm.getValue()}).catch(()=>0):$('#cp').click();
- $('#co').onclick=async()=>{try{await navigator.clipboard.writeText(o.innerText);say('✓ اتنسخت النتيجة')}catch(e){say('تعذّر النسخ')}};
+ $('#co').onclick=copyOut;
  $('#more').onclick=e=>{e.stopPropagation();I.classList.toggle('menu')};
  document.addEventListener('click',e=>{if(!e.target.closest('#more'))I.classList.remove('menu')});
  $('#autob').onclick=()=>{auto=!auto;try{localStorage.setItem('py-auto',auto?'1':'0')}catch(e){};stat();say(auto?'⚡ التشغيل التلقائي اشتغل':'التشغيل التلقائي اتقفل — استخدم ▶');if(auto)run(1)};
@@ -1528,18 +1724,24 @@ const initUi=()=>{
 const openIde=()=>{
  if(!cm){
   let v;try{v=localStorage.getItem('py-code')}catch(e){}
-  cm=window._cm=CodeMirror($('#ed'),{value:v||EX[0][1],mode:'python',lineNumbers:true,gutters:['CodeMirror-linenumbers','errg'],indentUnit:4,smartIndent:true,matchBrackets:true,autoCloseBrackets:true,styleActiveLine:true,lineWrapping:true,spellcheck:false,autocorrect:false,autocapitalize:false,inputStyle:'textarea',
+  cm=window._cm=CodeMirror($('#ed'),{value:v==null?EX[0][1]:v,mode:'python',lineNumbers:true,gutters:['CodeMirror-linenumbers','errg'],indentUnit:4,smartIndent:true,matchBrackets:true,autoCloseBrackets:true,styleActiveLine:true,lineWrapping:true,spellcheck:false,autocorrect:false,autocapitalize:false,inputStyle:'textarea',
    hintOptions:{hint,completeSingle:false,extraKeys:{Enter:(c,h)=>{h.close();c.execCommand('newlineAndIndent')}}},
    extraKeys:{'Ctrl-Enter':()=>run(),'Cmd-Enter':()=>run(),'Shift-Enter':()=>run(),'Ctrl-S':download,'Cmd-S':download,'Ctrl-/':'toggleComment','Cmd-/':'toggleComment','Ctrl-Space':'autocomplete',Tab:c=>c.somethingSelected()?c.execCommand('indentMore'):c.execCommand('insertSoftTab'),'Shift-Tab':'indentLess','Ctrl-D':dup,'Esc':()=>setFs(false)}});
   let dt,at;
-  cm.on('change',()=>{
+  const cleanPaste=t=>t.replace(/[\u00a0\u1680\u2000-\u200a\u202f\u205f\u3000]/g,' ').replace(/[\u200b-\u200d\u2060\ufeff\u00ad]/g,'').replace(/[\u201c\u201d\u201e\u00ab\u00bb]/g,'"').replace(/[\u2018\u2019\u201b]/g,"'").replace(/\u2212/g,'-').replace(/^\t+/,m=>'    '.repeat(m.length));
+  cm.on('beforeChange',(c,ch)=>{if(ch.origin!=='paste')return;ch.update(ch.from,ch.to,ch.text.map(cleanPaste))});
+  cm.on('change',(c,ch)=>{
+   if(ch&&ch.origin==='paste'){inputs=[];inp.value='';heldCode=null;stopped=0;
+    if(busy&&!isAuto){clearTimeout(tmo);flush();boot();pend=1}}
    clearErr();$('#dirty').classList.add('on');clearTimeout(dt);dt=setTimeout(()=>{try{localStorage.setItem('py-code',cm.getValue())}catch(e){};$('#dirty').classList.remove('on')},400);
    if(auto){clearTimeout(at);I.classList.add('stale');at=setTimeout(()=>run(1),DEB)}
   });
   if(!coarse)cm.on('inputRead',(c,ch)=>{if(ch.origin!='+input'||!/[\w.]/.test(ch.text[0]))return;const t=c.getTokenTypeAt(c.getCursor());if(!/string|comment|number/.test(t||''))c.showHint()});
   cm.on('cursorActivity',()=>{const p=cm.getCursor();$('#pos').textContent='Ln '+(p.line+1)+', Col '+(p.ch+1)+(cm.somethingSelected()?' · '+cm.getSelection().length+' محدد':'')});
   $('#run').onclick=()=>run();
-  $('#stop').onclick=()=>{flush();out('■ تم إيقاف التشغيل\n','m');boot()};
+  const stopRun=()=>{heldCode=cm.getValue();stopped=1;pend=0;clearTimeout(tmo);flush();out((endNL?'':'\n')+'■ تم إيقاف التشغيل\n','m');chip('','');boot()};
+  $('#stop').onclick=stopRun;$('#stop2').onclick=stopRun;
+  $('#resume').onclick=()=>{stopped=0;heldCode=null;chip('run','⏳ شغّال…');out((endNL?'':'\n')+'▶ تشغيل من جديد\n','m');run();stat()};
   $('#rs').onclick=()=>{o.textContent='';clearErr();chip('','');boot()};
   $('#clr').onclick=()=>{o.textContent='';chip('','');I.classList.remove('err')};
   $('#dl').onclick=download;
@@ -1575,7 +1777,7 @@ const feed=()=>{
   onSnapshot(collection(db,'live'),s=>{S.live=Object.fromEntries(s.docs.map(d=>[d.id,{id:d.id,...d.data()}]));render()},()=>0),
   onSnapshot(query(collection(db,'runs'),orderBy('at','desc'),limit(500)),s=>{S.runs=s.docs.map(d=>({id:d.id,...d.data()}));render()},()=>0),
   onSnapshot(collection(db,'support'),s=>{S.sups=Object.fromEntries(s.docs.map(d=>[d.id,{id:d.id,...d.data({serverTimestamps:'estimate'})}]));const g=s.docs.map(d=>d.id+supSig(d.data({serverTimestamps:'estimate'}))).join('|');if(g===SUP.gs)return typPaint();SUP.gs=g;supSync()},()=>0),
-  onSnapshot(collection(db,'presence'),s=>{S.pres=Object.fromEntries(s.docs.map(d=>[d.id,tm(d.data().at)]));if(S.adm&&(S.tab=='at'||S.tab=='as'))render();seenPaint()},()=>0),
+  onSnapshot(collection(db,'presence'),s=>{S.pres=Object.fromEntries(s.docs.map(d=>[d.id,tm(d.data().at)]));if(S.adm&&(S.tab=='ai'||S.tab=='as'))render();seenPaint()},()=>0),
   onSnapshot(collection(db,'sched'),s=>{S.sched=s.docs.map(d=>({id:d.id,...d.data()}));if(S.adm&&S.tab=='at')render();schedRun()},()=>0)
  );
 };
@@ -1639,6 +1841,18 @@ const vSeek=(id,e,el)=>{
  if(VOI.id!=id||!VOI.au)vPlay(id);
  const a=VOI.au;if(a)try{a.currentTime=f*m.dur;vpUi()}catch(x){}
 };
+let gT;
+const gToast=(t,bad)=>{let e=document.getElementById('gtoast');if(!e){e=document.createElement('div');e.id='gtoast';e.innerHTML='<span class=ti></span><span class=tt></span>';document.body.append(e)}
+ e.querySelector('.ti').textContent=bad?'!':'✓';e.querySelector('.tt').textContent=t;e.classList.toggle('bad',!!bad);e.classList.remove('on');void e.offsetWidth;e.classList.add('on');clearTimeout(gT);gT=setTimeout(()=>e.classList.remove('on'),1800)};
+const copyUi=async(txt,b,msg)=>{
+ if(!(txt||'').trim()){gToast('مفيش حاجة تتنسخ',1);return}
+ let ok=0;try{await navigator.clipboard.writeText(txt);ok=1}catch(x){}
+ if(!ok)try{const a=document.createElement('textarea');a.value=txt;a.setAttribute('readonly','');a.style.cssText='position:fixed;top:0;left:0;opacity:0';document.body.append(a);a.select();a.setSelectionRange(0,a.value.length);ok=document.execCommand('copy');a.remove()}catch(x){}
+ if(!ok){gToast('تعذّر النسخ',1);return}
+ try{navigator.vibrate&&navigator.vibrate(8)}catch(x){}
+ if(b){b.classList.remove('copied');void b.offsetWidth;b.classList.add('copied');setTimeout(()=>b.classList.remove('copied'),700);
+  const bub=b.closest('.sb,.cb');if(bub){bub.classList.remove('cflash');void bub.offsetWidth;bub.classList.add('cflash');setTimeout(()=>bub.classList.remove('cflash'),800)}}
+ gToast(msg||'✓ تم النسخ')};
 const copyMsg=async id=>{const m=SUP.msgs.find(x=>x.id==id);if(!m?.text)return;try{await navigator.clipboard.writeText(m.text)}catch(x){const t=document.createElement('textarea');t.value=m.text;document.body.append(t);t.select();try{document.execCommand('copy')}catch(y){}t.remove()}};
 const recMime=()=>['audio/webm;codecs=opus','audio/mp4','audio/webm','audio/ogg;codecs=opus'].find(t=>window.MediaRecorder&&MediaRecorder.isTypeSupported&&MediaRecorder.isTypeSupported(t))||'';
 const cleanRec=()=>{clearInterval(REC.iv);REC.stream?.getTracks().forEach(t=>t.stop());REC.mr=null;REC.stream=null;document.querySelector('#sup .supp')?.classList.remove('recing')};
@@ -1773,7 +1987,7 @@ const txtH=t=>{
 const lastTxt=t=>t.includes('```')?'💻 '+(t.split('```')[0].trim()||'كود'):t;
 const seenTxt=u=>{const t=(S.pres||{})[u];return !t?'':Date.now()-t<24e4?'🟢 أونلاين':'شوهد '+rel(t)};
 const seenPaint=()=>{if(!SUP.open||!isA())return;const e=$('#sup_sub');if(!e)return;const s=seenTxt(SUP.uid);e.dataset.s=(e.dataset.b||'')+(s?' · '+s:'');typPaint()};
-const ping=()=>{if(!S.u||isA()||document.hidden||Date.now()-PR.t<6e4)return;PR.t=Date.now();setDoc(doc(db,'presence',S.u.uid),{at:serverTimestamp()}).catch(()=>0)};
+const ping=()=>{if(!S.u||S.deleting||isA()||document.hidden||Date.now()-PR.t<6e4)return;PR.t=Date.now();setDoc(doc(db,'presence',S.u.uid),{at:serverTimestamp()}).catch(()=>0)};
 const ratePaint=()=>{const e=$('#sup_rate');if(!e)return;const d=S.sup1;if(isA()||!d||d.st!='done'){e.hidden=true;e.innerHTML='';return}
  e.hidden=false;e.innerHTML=`<span>✅ المحادثة اتحلّت. تقيّم الدعم؟</span><button type=button class="s${d.rate=='up'?' on':''}" data-a=rate data-id=up>👍</button><button type=button class="s${d.rate=='down'?' on':''}" data-a=rate data-id=down>👎</button>`};
 const adminTargets=to=>to=='*'?S.users.filter(u=>notA(u)&&!u.banned):S.users.filter(u=>u.id==to);
@@ -1836,7 +2050,7 @@ const bubbles=()=>{
    rp=!m._p&&SUP.act==m.id&&SUP.rx==m.id?`<div class=rxp dir=ltr>${RXS.map(e=>`<button type=button data-a=mrxs data-id="${E(m.id)}" data-e="${e}">${e}</button>`).join('')}</div>`:'',
    rq=m.rid?`<div class=rq data-a=rgo data-id="${E(m.rid)}"><b>${m.rf==me?'أنت':(A?'الطالب':'الدعم')}</b><span>${E(m.rtx||'')}</span></div>`:'',
    rx=['u','a'].filter(k=>m.rx&&m.rx[k]).map(k=>`<span class="rxc${k==me?' mine':''}"${k==me?` data-a=mrxs data-id="${E(m.id)}" data-e=""`:''}>${E(m.rx[k])}</span>`).join('');
-  h+=`<div class="sb ${mine?'me':'th'}${pf!=m.from?' fi':''}" dir=auto data-a=bub data-id="${E(m.id)}" data-mid="${E(m.id)}">${ac}${rp}${rq}${imgH(m)}${audH(m)}${txtH(m.text||'')}${rx?`<div class=rxs>${rx}</div>`:''}<span class=tm>${m.edited?'<span class=ed>معدّلة</span>':''}${hm(t)}${tk}</span></div>`;
+  h+=`<div class="sb ${mine?'me':'th'}${pf!=m.from?' fi':''}" dir=auto data-a=bub data-id="${E(m.id)}" data-mid="${E(m.id)}">${m.text&&!m._p?`<button type=button class=bcp data-a=mcopy data-id="${E(m.id)}" title="نسخ الرسالة" aria-label="نسخ الرسالة">⧉</button>`:''}${ac}${rp}${rq}${imgH(m)}${audH(m)}${txtH(m.text||'')}${rx?`<div class=rxs>${rx}</div>`:''}<span class=tm>${m.edited?'<span class=ed>معدّلة</span>':''}${hm(t)}${tk}</span></div>`;
   pf=m.from;
  });
  return h||(SUP.q?`<div class=semp>مفيش نتايج 🔍</div>`:`<div class=semp>${isA()?'لسه مفيش رسايل. اكتب أول رسالة للطالب 👇':'اسأل أو ابعت أي مشكلة وهنرد عليك هنا 💬'}</div>`);
@@ -1997,6 +2211,7 @@ document.addEventListener('click',async e=>{
   else if(a=='aclose'){if(e.target.closest('.mbox')&&!e.target.closest('.mx'))return;S.am=0;render()}
   else if(a=='peek'){const i=$('#ap_');i.type=i.type=='password'?'text':'password';b.textContent=i.type=='password'?'إظهار':'إخفاء'}
   else if(a=='out')signOut(auth);
+  else if(a=='pmenu')openPM(b);
   else if(a=='supimg')$('#sup_fi')?.click();
   else if(a=='supmic')startRec();
   else if(a=='recx')stopRec(true);
@@ -2013,7 +2228,7 @@ document.addEventListener('click',async e=>{
   else if(a=='rgo'){const el=document.querySelector('#sup_m [data-mid="'+CSS.escape(id)+'"]');if(el){el.scrollIntoView({block:'center',behavior:'smooth'});el.classList.remove('flash');void el.offsetWidth;el.classList.add('flash')}}
   else if(a=='ssearch'){const bx=$('#sup_sb');if(!bx)return;bx.hidden=!bx.hidden;if(bx.hidden){SUP.q='';$('#sup_s').value='';SUP.stick=0;chatPaint()}else $('#sup_s')?.focus()}
   else if(a=='smute'){const v=!muted();try{localStorage.setItem('supmute',v?'1':'0')}catch(x){}b.textContent=v?'🔕':'🔔'}
-  else if(a=='ccopy'){const t=b.parentElement.querySelector('pre')?.textContent||'';try{await navigator.clipboard.writeText(t)}catch(x){}b.textContent='تم ✓';setTimeout(()=>b.textContent='نسخ',900)}
+  else if(a=='ccopy'){await copyUi(b.parentElement.querySelector('pre')?.textContent||'',b,'✓ تم نسخ الكود')}
   else if(a=='scode')codeBtn()
   else if(a=='rate'){if(S.sup1?.st=='done')try{await updateDoc(doc(db,'support',S.u.uid),{rate:id})}catch(x){alert('تعذّر التقييم: '+errMsg(x))}}
   else if(a=='schdel'){try{await deleteDoc(doc(db,'sched',id))}catch(x){alert(errMsg(x))}}
@@ -2035,18 +2250,19 @@ document.addEventListener('click',async e=>{
   else if(a=='editprof'){S.editProf=1;S.pfKey='';render()}
   else if(a=='sf'){S.sf=id;render()}
   else if(a=='mdel'){SUP.act=null;chatPaint();msgDel(id)}
-  else if(a=='mcopy'){await copyMsg(id);const o=b.textContent;b.textContent='✓';setTimeout(()=>b.textContent=o,900)}
+  else if(a=='mcopy'){const m=SUP.msgs.find(x=>x.id==id);await copyUi(m?.text||'',b,'✓ تم نسخ الرسالة')}
   else if(a=='vspd')vSpd();
   else if(a=='vseek')vSeek(id,e,b);
   else if(a=='medit'){SUP.act=null;chatPaint();msgEdit(id)}
   else if(a=='pvx'){SUP.img=null;pvPaint()}
   else if(a=='simgv')openImgV(b.getAttribute('src'));
-  else if(a=='supopen'){if(isA()){S.adm=1;S.tab='at';render();scrollTo({top:0})}else openChat(S.u.uid)}
+  else if(a=='supopen'){if(isA()){S.adm=1;S.tab='ai';S.nav=0;render();scrollTo({top:0})}else openChat(S.u.uid)}
   else if(a=='chat')openChat(id);
   else if(a=='supclose')closeChat();
   else if(a=='supdel')await delChat();
-  else if(a=='adm'){S.adm=!S.adm;S.tab=S.adm?'ao':'v';render();scrollTo({top:0})}
-  else if(a=='tab'){S.tab=id;render();if(id!='e')scrollTo({top:0,behavior:'smooth'})}
+  else if(a=='adm'){S.adm=!S.adm;S.tab=S.adm?'av':'v';S.nav=S.adm?1:0;render();scrollTo({top:0})}
+  else if(a=='navtog'){S.nav=!S.nav;navPaint()}
+  else if(a=='tab'){S.tab=id;if(S.adm&&isA()){S.nav=0;navPaint()}render();if(id!='e')scrollTo({top:0,behavior:'smooth'})}
   else if(a=='play'){S.cur=id;render();scrollTo({top:0,behavior:'smooth'});saveP({last:id})}
   else if(a=='tgl'){const v=!dn(id);if(v){const r=b.getBoundingClientRect();confetti(r.left+r.width/2,r.top+r.height/2,90)}S.prog.done={...S.prog.done,[id]:v};render();saveP({done:{[id]:v}})}
   else if(a=='ans')S.ans[id]=+b.value;
@@ -2059,7 +2275,7 @@ document.addEventListener('click',async e=>{
    if(pct>=50)setTimeout(()=>{confetti(innerWidth/2,innerHeight*.6,220);if(pct>=80)setTimeout(()=>confetti(innerWidth*.2,innerHeight*.4,120),300)},500);
   }
   else if(a=='rst'){S.ans={};S.done=0;render()}
-  else if(a=='selu'){S.sel=id;S.tab='ae';render();scrollTo({top:0,behavior:'smooth'})}
+  else if(a=='selu'){S.sel=id;S.tab='ae';S.nav=0;render();scrollTo({top:0,behavior:'smooth'})}
   else if(a=='openc'){const l=S.live[id];if(!l)return;try{localStorage.setItem('py-code',l.code)}catch(x){};if(window._cm)_cm.setValue(l.code);S.adm=0;S.tab='e';render()}
   else if(a=='rstp'){if(confirm('تصفّر تقدّم الطالب ده (الدروس والاختبار)؟'))await deleteDoc(doc(db,'progress',id))}
   else if(a=='delruns'){if(confirm('تمسح كل سجل المحرر للطالب ده؟')){b.disabled=1;await delRuns(id)}}
@@ -2135,7 +2351,7 @@ onAuthStateChanged(auth,async u=>{
  stop(un);stop(cs);closeChat();
  if(u&&S.wantA&&low(u)!==AD){S.wantA=0;await signOut(auth);return}
  const A=low(u)===AD;S.wantA=0;
- Object.assign(S,{editProf:0,pfKey:'',pfPhoto:'',ready:1,u,me:null,adm:A?1:0,tab:A?'ao':'v',cur:null,eq:null,err:'',am:0,content:[],qs:[],users:[],prog:{},allProg:{},live:{},runs:[],settings:{},pl:0,ans:{},done:0,sel:null,sup1:null,sups:{}});
+ Object.assign(S,{deleting:0,editProf:0,pfKey:'',pfPhoto:'',ready:1,u,me:null,adm:A?1:0,tab:A?'av':'v',nav:A?1:0,cur:null,eq:null,err:'',am:0,content:[],qs:[],users:[],prog:{},allProg:{},live:{},runs:[],settings:{},pl:0,ans:{},done:0,sel:null,sup1:null,sups:{}});
  if(!u)return render();
  const r=doc(db,'users',u.uid);let mk=0;
  un.push(onSnapshot(r,s=>{
