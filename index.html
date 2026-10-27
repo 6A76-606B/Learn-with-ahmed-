@@ -775,6 +775,8 @@ hr.sp2{border:0;border-top:1px dashed var(--ln2);margin:20px 0}
 
 /* ===== الدعم / الشات ===== */
 .bdg{display:inline-block;min-width:18px;height:18px;padding:0 5px;border-radius:99px;background:var(--r);color:#fff;font:700 11px/18px var(--disp);text-align:center}
+#ide .pyai,.pyaih{background:linear-gradient(135deg,#3b2a8f,#1f5fa8)!important;color:#fff!important;border-color:#ffffff30!important;font-weight:700}
+.pyaih{white-space:nowrap}
 .supb{position:relative}
 .supb .bdg{position:absolute;top:3px;inset-inline-start:3px;animation:pop .4s var(--spring)}
 #ide .supb .bdg{top:1px;inset-inline-start:1px}
@@ -998,7 +1000,8 @@ header button{white-space:nowrap;flex:none}
    <button class="ibtn" id="lay" title="تبديل التقسيم: جنب بعض / فوق وتحت">⇅ <span class="lb2">تبديل التقسيم</span></button>
    <button class="ibtn" id="fs" title="ملء الشاشة">⛶ <span class="lb2">ملء الشاشة</span></button>
   </div>
-  <button class="ibtn supb" data-a="supopen" title="الدعم"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-12.2 7.5L3 20.5l1.6-5A8.4 8.4 0 1 1 21 11.5z"/></svg><b class="bdg" hidden></b></button>
+  <button class="ibtn pyai" data-a="pyai" title="py AI — مساعد بايثون">🐍 <span class="lb2">py AI</span></button>
+   <button class="ibtn supb" data-a="supopen" title="الدعم"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-12.2 7.5L3 20.5l1.6-5A8.4 8.4 0 1 1 21 11.5z"/></svg><b class="bdg" hidden></b></button>
   <button class="ibtn thm" data-a="theme" title="لايت / دارك"><svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg><svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button>
   <button class="ibtn" id="more" title="المزيد">⋯</button>
   <button class="runb" id="run" disabled>▶ <span class="hm">تشغيل</span> <kbd>Ctrl ↵</kbd></button>
@@ -1088,7 +1091,7 @@ const dn=id=>!!S.prog.done?.[id];
 const saveP=async d=>{try{await setDoc(doc(db,'progress',S.u.uid),{...d,at:serverTimestamp()},{merge:true})}catch(x){alert('تعذّر حفظ التقدّم: '+errMsg(x))}};
 
 const supBtn=()=>{const n=supN(),on=isA()&&S.adm&&S.tab=='ai';return `<button class="${on?'y':'s'} ico supb" data-a=supopen title="${isA()?'المحادثات':'الدعم'}">${IC.chat}<b class=bdg${n?'':' hidden'}>${n>9?'9+':n||''}</b></button>`};
-const head=()=>`<header class="${isA()?'ha':''}">${brand()}${isA()?`<button class="y sm" data-a=adm title="${S.adm?'عرض كطالب':'لوحة التحكم'}">${S.adm?'👁<span class=hl> عرض كطالب</span>':'⚙️<span class=hl> لوحة التحكم</span>'+(repN()?'<i class=rdot></i>':'')}</button>`:''}${folBtn("s sm")}${supBtn()}${secBtn()}${pwaBtn()}${thm()}${isA()?(S.u.photoURL?`<img class="av hide-s" src="${E(S.u.photoURL)}" referrerpolicy=no-referrer alt="">`:'')+'<button class="s sm" data-a=out>خروج</button>':pavBtn()}</header>`;
+const head=()=>`<header class="${isA()?'ha':''}">${brand()}${isA()?`<button class="y sm" data-a=adm title="${S.adm?'عرض كطالب':'لوحة التحكم'}">${S.adm?'👁<span class=hl> عرض كطالب</span>':'⚙️<span class=hl> لوحة التحكم</span>'+(repN()||unsN()?'<i class=rdot></i>':'')}</button>`:''}${pyHead()}${folBtn("s sm")}${supBtn()}${secBtn()}${pwaBtn()}${thm()}${isA()?(S.u.photoURL?`<img class="av hide-s" src="${E(S.u.photoURL)}" referrerpolicy=no-referrer alt="">`:'')+'<button class="s sm" data-a=out>خروج</button>':pavBtn()}</header>`;
 const pavBtn=()=>{const p=safe(S.me?.photo||S.u.photoURL||'');return `<button type=button class=pav data-a=pmenu title="حسابي" aria-label="حسابي" aria-haspopup=menu>${p?`<img src="${E(p)}" referrerpolicy=no-referrer alt="">`:'<span>👤</span>'}</button>`};
 
 const stuTabs=()=>{const c=cfg(),A=isA();return [['v','🎬 الدروس'],(c.files||A)&&['f','📎 الملفات'],(c.quiz||A)&&['q','📝 الاختبار'],(c.editor||A)&&['e','💻 المحرر']].filter(Boolean)};
@@ -1126,11 +1129,12 @@ const sCard=(i,n,t)=>`<div class="card stat"><span class=si>${i}</span><b data-c
 const codev=(code,out)=>`<div class=codev><div class=hd><span>CODE</span><span>OUTPUT</span></div><pre class=tok>${hl(code||'')}</pre><pre>${E(out||'')||'<span style="opacity:.5">— مفيش ناتج —</span>'}</pre></div>`;
 const runTag=r=>r.ok?'<span class="tag okt">✓ صح</span>':`<span class="tag ert">✕ خطأ${r.line?' · سطر '+r.line:''}</span>`;
 /* قايمة الأدمن: زرار ☰ بيفتح الأقسام تحت بعض */
-const ANAV=[['ao','📊 نظرة عامة'],['av','🎬 الفيديوهات'],['af','📎 الملفات'],['as','👥 الطلاب'],['ae','💻 نشاط المحرر'],['aq','❓ الأسئلة'],['at','📢 رسايل جماعية'],['ab','🚫 الحسابات المحظورة'],['am','👑 المشرفين'],['ac','🔒 المحادثات السرية'],['ag','⚙️ الإعدادات']];
+const ANAV=[['ao','📊 نظرة عامة'],['av','🎬 الفيديوهات'],['af','📎 الملفات'],['as','👥 الطلاب'],['ae','💻 نشاط المحرر'],['aq','❓ الأسئلة'],['at','📢 رسايل جماعية'],['ab','🚫 الحسابات المحظورة'],['au','🆘 مشاكل لم تحل'],['am','👑 المشرفين'],['ac','🔒 المحادثات السرية'],['ag','⚙️ الإعدادات']];
 const anav=()=>{
  const cur=(ANAV.find(t=>t[0]==S.tab)||(S.tab=='ai'?['ai','💬 المحادثات']:ANAV[0]))[1];
  return `<nav class="anav${S.nav?' open':''}"><button type=button class="s anbtn" data-a=navtog aria-expanded="${S.nav?'true':'false'}" aria-controls=anl><span class=hbg aria-hidden=true><i></i><i></i><i></i></span><span class=tt>${cur}</span><svg class=chv viewBox="0 0 24 24" fill=none stroke=currentColor stroke-width=2.5 stroke-linecap=round stroke-linejoin=round aria-hidden=true><path d="m6 9 6 6 6-6"/></svg>${apN()&&S.tab!='ab'?`<b class=apbdg>${apN()}</b>`:''}${repN()&&S.tab!='av'?'<i class=rdot></i>':''}</button><div class=anlist id=anl><div>${ANAV.filter(([k])=>(k!='am'&&k!='ac')||isS()).map(([k,t])=>`<button type=button class="${S.tab==k?'on':'s'}" data-a=tab data-id=${k}>${t}${k=='ab'&&apN()?`<b class=apbdg>${apN()}</b>`:''}${k=='ac'&&secUnread()?`<b class=apbdg>${secUnread()}</b>`:''}${k=='av'&&repN()?'<i class=rdot></i>':''}</button>`).join('')}</div></div></nav>`};
 const navPaint=()=>{const e=document.querySelector('.anav');if(!e)return;e.classList.toggle('open',!!S.nav);e.querySelector('.anbtn')?.setAttribute('aria-expanded',S.nav?'true':'false')};
+const unsN=()=>Object.keys(S.uns||{}).length;
 const admin=()=>{
  const U=S.users.filter(notA),L=lessons();
  let h=anav();
@@ -1200,6 +1204,10 @@ const admin=()=>{
      +`<div class="row wr" style="margin-top:10px">${sm('kickone',id,'🚪 إخراج','r')}${p?sm('admban',id,p.banned?'✅ فك الحظر':'⛔ حظر',p.banned?'s':'r'):''}${p?sm('admdel',id,'🗑 حذف الحساب','r'):''}${p?sm('asecopen',id,'🔒 رسالة سرية'):''}</div></div>`}).join('')||empty('لسه مفيش أدمن سجّلوا بأسمائهم.','👑'))
    +`</div><div class=card><h3>🔑 الباسورد المشترك</h3><p class=m style="margin-bottom:10px">كل الأدمن بيدخلوا بنفس الإيميل والباسورد، فتغيير الباسورد بيأثر عليهم كلهم.</p><div class="row wr">${AC.map(e=>`${sm('pwreset',e,'🔑 لينك تغيير الباسورد ('+E(e)+')')}${sm('kick',e,'🚪 إخراج الكل','r')}`).join('')}</div></div>`
    +`<p class=m style="margin:12px 2px">⚠️ الحظر والإخراج بيمنعوا الشخص من اللوحة من جوه الموقع. لأن الكل بيشارك نفس الحساب، لو عايز تقفل الباب نهائياً على حد اتحظر غيّر الباسورد.</p>`;
+ }else if(S.tab=='au'){
+  const Z=Object.values(S.uns||{}).sort((x,y)=>tm(y.at)-tm(x.at));
+  h+=`<p class=m style="margin:0 2px 10px">مشاكل الطلاب اللي AI الدعم ماعرفش يحلها (${Z.length}). افتح المحادثة وردّ، وبعدين اضغط ✅ تم الحل.</p><div data-live>`
+   +(Z.map(z=>`<div class="card wr" style="margin-bottom:10px"><b>${E(z.name||z.email||'طالب')}</b><small class=m dir=auto style="display:block">${E(z.email||'')} · ${rel(tm(z.at))}</small><p dir=auto style="margin:8px 0;white-space:pre-wrap">${E(z.problem||'')}</p><div class="row wr">${sm('chat',z.id,'💬 المحادثة')}${sm('unsdone',z.id,'✅ تم الحل','s')}</div></div>`).join('')||empty('مفيش مشاكل لسه محتاجة حلّ 🎉','🆘'))+'</div>';
  }else if(S.tab=='ab'){
   const B=U.filter(u=>u.banned).map(u=>({u,a:(S.apps||{})[u.id]})).sort((x,y)=>(tm(y.a?.at)||ms(y.u))-(tm(x.a?.at)||ms(x.u)));
   h+=`<p class=m style="margin:0 2px 10px">الحسابات اللي اتحظرت ورسايلها ليك. اضغط على 💬 المحادثة عشان تقرأ وتردّ، أو فك الحظر.</p><div data-live>`
@@ -2173,7 +2181,8 @@ const feed=()=>{
   onSnapshot(collection(db,'presence'),s=>{S.pres=Object.fromEntries(s.docs.map(d=>[d.id,tm(d.data().at)]));if(S.adm&&(S.tab=='ai'||S.tab=='as'))render();seenPaint()},()=>0),
   onSnapshot(collection(db,'sched'),s=>{S.sched=s.docs.map(d=>({id:d.id,...d.data()}));if(S.adm&&S.tab=='at')render();schedRun()},()=>0),
    onSnapshot(collection(db,'appeals'),s=>{S.apps=Object.fromEntries(s.docs.map(d=>[d.id,{id:d.id,...d.data({serverTimestamps:'estimate'})}]));render()},()=>0),
-   onSnapshot(collection(db,'reports'),s=>{S.reps=s.docs.map(d=>({id:d.id,...d.data({serverTimestamps:'estimate'})}));render()},()=>0)
+   onSnapshot(collection(db,'reports'),s=>{S.reps=s.docs.map(d=>({id:d.id,...d.data({serverTimestamps:'estimate'})}));render()},()=>0),
+   onSnapshot(collection(db,'unsolved'),s=>{S.uns=Object.fromEntries(s.docs.map(d=>[d.id,{id:d.id,...d.data({serverTimestamps:'estimate'})}]));render()},()=>0)
  );
  if(isS())cs.push(onSnapshot(collection(db,'asecret'),s=>{S.asecs=Object.fromEntries(s.docs.map(d=>[d.id,{id:d.id,...d.data({serverTimestamps:'estimate'})}]));render()},()=>0));
  if(isS())cs.push(onSnapshot(collection(db,'secret'),s=>{S.secs=Object.fromEntries(s.docs.map(d=>[d.id,{id:d.id,...d.data({serverTimestamps:'estimate'})}]));render()},()=>0));
@@ -2267,7 +2276,7 @@ const sendVoice=async(aud,dur)=>{
  const rep0=SUP.reply,rep=rpGet(),b=writeBatch(db);
  b.set(doc(collection(db,'support',uid,'msgs')),{from:A?'a':'u',text:'',at:serverTimestamp(),aud,dur,...rep,...(supName()?{an:supName()}:{})});
  b.set(doc(db,'support',uid),meta,{merge:true});
- try{await b.commit()}catch(x){if(rep0){SUP.reply=rep0;rpPaint()}alert('تعذّر إرسال الصوت: '+errMsg(x))}
+ try{await b.commit();if(!A)supAI()}catch(x){if(rep0){SUP.reply=rep0;rpPaint()}alert('تعذّر إرسال الصوت: '+errMsg(x))}
 };
 const finishRec=async()=>{
  const cancel=REC.cancel,chunks=REC.chunks,dur=Math.max(1,Math.min(REC_MAX,Math.round((Date.now()-REC.t0)/1000))),type=REC.mr?.mimeType||chunks[0]?.type||'audio/webm';
@@ -2327,7 +2336,7 @@ const supSig=d=>{const o={...d};delete o.uTyp;delete o.aTyp;return JSON.stringif
 const typPaint=()=>{
  if(!SUP.open)return;const e=$('#sup_sub');if(!e)return;
  const A=isA(),d=A?S.sups[SUP.uid]:S.sup1,t=tm(d?.[A?'uTyp':'aTyp']),on=!!t&&Date.now()-t<7000;
- e.textContent=on?'بيكتب…':e.dataset.s;e.classList.toggle('typ',on);
+ e.textContent=SUP.aiw?'🤖 AI الدعم بيكتب…':on?'بيكتب…':e.dataset.s;e.classList.toggle('typ',on);
  clearTimeout(SUP.tt);if(on)SUP.tt=setTimeout(typPaint,Math.max(300,7100-(Date.now()-t)));
 };
 const typSend=()=>{
@@ -2452,7 +2461,7 @@ const bubbles=()=>{
    rp=!m._p&&SUP.act==m.id&&SUP.rx==m.id?`<div class=rxp dir=ltr>${RXS.map(e=>`<button type=button data-a=mrxs data-id="${E(m.id)}" data-e="${e}">${e}</button>`).join('')}</div>`:'',
    rq=m.rid?`<div class=rq data-a=rgo data-id="${E(m.rid)}"><b>${m.rf==me?'أنت':(A?'الطالب':'الدعم')}</b><span>${E(m.rtx||'')}</span></div>`:'',
    rx=['u','a'].filter(k=>m.rx&&m.rx[k]).map(k=>`<span class="rxc${k==me?' mine':''}"${k==me?` data-a=mrxs data-id="${E(m.id)}" data-e=""`:''}>${E(m.rx[k])}</span>`).join('');
-  h+=`<div class="sb ${mine?'me':'th'}${pf!=m.from?' fi':''}" dir=auto data-a=bub data-id="${E(m.id)}" data-mid="${E(m.id)}">${m.text&&!m._p?`<button type=button class=bcp data-a=mcopy data-id="${E(m.id)}" title="نسخ الرسالة" aria-label="نسخ الرسالة">⧉</button>`:''}${ac}${rp}${rq}${m.from=='a'&&m.an?`<span class=san>👑 ${E(m.an)}</span>`:''}${imgH(m)}${audH(m)}${txtH(m.text||'')}${rx?`<div class=rxs>${rx}</div>`:''}<span class=tm>${m.edited?'<span class=ed>معدّلة</span>':''}${hm(t)}${tk}</span></div>`;
+  h+=`<div class="sb ${mine?'me':'th'}${pf!=m.from?' fi':''}" dir=auto data-a=bub data-id="${E(m.id)}" data-mid="${E(m.id)}">${m.text&&!m._p?`<button type=button class=bcp data-a=mcopy data-id="${E(m.id)}" title="نسخ الرسالة" aria-label="نسخ الرسالة">⧉</button>`:''}${ac}${rp}${rq}${m.from=='a'&&m.ai?'<span class=san>🤖 AI الدعم</span>':m.from=='a'&&m.an?`<span class=san>👑 ${E(m.an)}</span>`:''}${imgH(m)}${audH(m)}${txtH(m.text||'')}${rx?`<div class=rxs>${rx}</div>`:''}<span class=tm>${m.edited?'<span class=ed>معدّلة</span>':''}${hm(t)}${tk}</span></div>`;
   pf=m.from;
  });
  return h||(SUP.q?`<div class=semp>مفيش نتايج 🔍</div>`:`<div class=semp>${isA()?'لسه مفيش رسايل. اكتب أول رسالة للطالب 👇':'اسأل أو ابعت أي مشكلة وهنرد عليك هنا 💬'}</div>`);
@@ -2494,6 +2503,65 @@ const openChat=uid=>{
  if(!matchMedia('(pointer:coarse)').matches)setTimeout(()=>$('#sup_in')?.focus(),250);
 };
 const closeChat=()=>{if(REC.mr){REC.cancel=1;try{REC.mr.stop()}catch(e){cleanRec()}}if(VOI.au){VOI.au.pause();VOI.au=null;VOI.id=null}SUP.un&&SUP.un();SUP.un=null;SUP.open=0;SUP.uid=null;$('#sup')?.remove();document.body.classList.remove('sup-on')};
+/* ===== الـ AI: py AI (الشرح) + AI الدعم — بيكلّموا الـ Worker ===== */
+const AI_URL='https://white-haze-f6b8.markogorge18.workers.dev';
+const aiCall=async(path,body)=>{
+ const tk=await auth.currentUser.getIdToken();
+ const r=await fetch(AI_URL+path,{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+tk},body:JSON.stringify(body||{}),signal:AbortSignal.timeout?AbortSignal.timeout(35000):undefined});
+ let j=null;try{j=await r.json()}catch(e){}
+ if(!j||!j.ok)throw new Error((j&&j.msg)||'المساعد مش متاح دلوقتي');
+ return j;
+};
+/* AI الدعم: بيرد على رسالة الطالب في شات الدعم (من غير زرار). لو معرفش يحلها بيسجّلها في "مشاكل لم تحل" */
+const supAI=()=>{
+ if(isA()||!auth.currentUser)return;
+ clearTimeout(SUP.aiT);
+ SUP.aiT=setTimeout(async()=>{SUP.aiw=1;typPaint();try{await aiCall('/support',{})}catch(e){}SUP.aiw=0;typPaint()},1200);
+};
+/* py AI: مساعد بايثون (زرار واضح للطالب) */
+const PY={h:[],busy:0};
+const pyHead=()=>'<button class="y sm pyaih" data-a=pyai title="py AI — مساعد بايثون">🐍<span class=hl> py AI</span></button>';
+const pyPaint=()=>{
+ const m=$('#py_m');if(!m)return;
+ m.innerHTML=(PY.h.length?'':'<div class=semp style="padding:22px 14px;text-align:center;line-height:1.9">اسألني أي حاجة في بايثون 🐍<br>أو دوس <b>اشرح الخطأ</b> / <b>اشرح الكود</b> وأنا أقرا اللي في المحرر.</div>')
+  +PY.h.map(x=>`<div class="sb ${x.r=='u'?'me':'th'}" dir=auto>${x.r=='m'?'<span class=san>🐍 py AI</span>':''}${txtH(x.t)}</div>`).join('')
+  +(PY.busy?'<div class="sb th"><span class=san>🐍 py AI</span>بيكتب…</div>':'');
+ m.scrollTop=m.scrollHeight;
+};
+const pySend=async(mode,full)=>{
+ if(PY.busy)return;
+ const ta=$('#py_in'),q=(ta?.value||'').trim().slice(0,800),cm=window._cm,code=cm?cm.getValue().slice(0,20000):'';
+ const body={mode,full:!!full,q,h:PY.h.filter(x=>!x.e).slice(-6).map(x=>({r:x.r,t:x.t.slice(0,1500)}))};
+ let shown=q;
+ if(mode=='error'||mode=='code'){
+  if(!code.trim()){PY.h.push({r:'m',t:'مفيش كود في المحرر. اكتب كودك الأول وبعدين اضغط الزرار 🙂',e:1});pyPaint();return}
+  const out=($('#out')?.textContent||'').slice(-5000),mm=[...out.matchAll(/line (\d+)/g)];
+  body.code=code;
+  if(mode=='error'){body.out=out;if(mm.length)body.line=+mm[mm.length-1][1]}
+  shown=(mode=='error'?'🐞 اشرحلي الخطأ':'📖 اشرحلي الكود')+(full?' (الحل الكامل)':'')+(q?'\n'+q:'');
+ }else if(!q)return;
+ if(ta){ta.value='';ta.style.height=''}
+ PY.h.push({r:'u',t:shown});PY.busy=1;pyPaint();
+ try{const j=await aiCall('/explain',body);PY.h.push({r:'m',t:j.reply+(j.cut?'\n\n… (الرد اتقطع، اكتب "كمّل")':'')})}
+ catch(x){PY.h.push({r:'m',t:'⚠️ '+(x.message||'حصلت مشكلة، جرّب تاني'),e:1})}
+ PY.busy=0;if(PY.h.length>40)PY.h=PY.h.slice(-40);pyPaint();
+};
+const pyClose=()=>$('#pyai')?.remove();
+const pyOpen=()=>{
+ if($('#pyai')||!auth.currentUser)return;
+ const w=document.createElement('div');w.id='pyai';w.className='supw';
+ w.innerHTML=`<div class=supp><div class=suph><button type=button data-p=close title="رجوع">→</button><span class=supav>🐍</span><div class=g><b>py AI</b><small>مساعد بايثون: شرح وأسئلة وأخطاء</small></div><button type=button data-p=clr title="محادثة جديدة">🗑</button></div><div class=supm id=py_m></div><div class="row wr" style="padding:6px 10px;gap:6px"><button type=button class=s data-p=error>🐞 اشرح الخطأ</button><button type=button class=s data-p=code>📖 اشرح الكود</button><button type=button class=s data-p=full title="حل كامل للخطأ">✅ الحل الكامل</button></div><form class=supf id=py_f autocomplete=off><textarea id=py_in dir=auto rows=1 maxlength=800 enterkeyhint=send placeholder="اسأل في بايثون…"></textarea><button type=submit class=supsend title="إرسال"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 20.5 21 12 3 3.5l2.6 7.7L14 12l-8.4.8z"/></svg></button></form></div>`;
+ w.addEventListener('click',e=>{
+  if(e.target===w)return pyClose();
+  const p=e.target.closest('[data-p]')?.dataset.p;if(!p)return;
+  if(p=='close')pyClose();else if(p=='clr'){PY.h=[];pyPaint()}
+  else if(p=='error')pySend('error');else if(p=='code')pySend('code');else if(p=='full')pySend('error',true);
+ });
+ w.querySelector('#py_f').addEventListener('submit',e=>{e.preventDefault();pySend('chat')});
+ w.querySelector('#py_in').addEventListener('keydown',e=>{if(e.key=='Enter'&&!e.shiftKey&&!matchMedia('(pointer:coarse)').matches){e.preventDefault();pySend('chat')}});
+ document.body.append(w);pyPaint();
+ if(!matchMedia('(pointer:coarse)').matches)setTimeout(()=>$('#py_in')?.focus(),250);
+};
 const supSend=async code=>{
  const ta=$('#sup_in');if(!ta||!SUP.uid)return;
  const isC=typeof code=='string',A=isA(),img=isC?null:SUP.img,raw=ta.value,note=raw.trim().slice(0,400),text=isC?((note?note+'\n':'')+code).slice(0,20000):raw.trim().slice(0,2000);if(!text&&!img)return;
@@ -2505,7 +2573,7 @@ const supSend=async code=>{
  const b=writeBatch(db);
  b.set(doc(collection(db,'support',uid,'msgs')),{from:A?'a':'u',text,at:serverTimestamp(),...(img?{img}:{}),...rep,...(supName()?{an:supName()}:{})});
  b.set(doc(db,'support',uid),meta,{merge:true});
- try{await b.commit()}catch(x){ta.value=raw;if(img){SUP.img=img;pvPaint()}if(rep0){SUP.reply=rep0;rpPaint()}alert('تعذّر الإرسال: '+errMsg(x))}
+ try{await b.commit();if(!A)supAI()}catch(x){ta.value=raw;if(img){SUP.img=img;pvPaint()}if(rep0){SUP.reply=rep0;rpPaint()}alert('تعذّر الإرسال: '+errMsg(x))}
 };
 const msgLab=m=>m?(m.aud?'🎤 رسالة صوتية':m.img?'📷 '+(m.text||'صورة'):lastTxt(m.text||'')).slice(0,80)||'—':'—';
 const fixLast=async rest=>{
@@ -2672,6 +2740,8 @@ document.addEventListener('click',async e=>{
   else if(a=='simgv')openImgV(b.getAttribute('src'));
   else if(a=='supopen'){if(isA()){S.adm=1;S.tab='ai';S.nav=0;render();scrollTo({top:0})}else openChat(S.u.uid)}
   else if(a=='chat')openChat(id);
+  else if(a=='pyai')pyOpen();
+  else if(a=='unsdone'){try{await deleteDoc(doc(db,'unsolved',id))}catch(x){alert('تعذّر: '+errMsg(x))}}
   else if(a=='supclose')closeChat();
   else if(a=='supdel')await delChat();
   else if(a=='adm'){S.adm=!S.adm;S.tab=S.adm?'ao':'v';S.nav=0;render();scrollTo({top:0})}
