@@ -2512,11 +2512,25 @@ const aiCall=async(path,body)=>{
  if(!j||!j.ok)throw new Error((j&&j.msg)||'المساعد مش متاح دلوقتي');
  return j;
 };
+const aiStream=async(path,body,on)=>{
+ const tk=await auth.currentUser.getIdToken();
+ const r=await fetch(AI_URL+path,{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+tk},body:JSON.stringify(body),signal:AbortSignal.timeout?AbortSignal.timeout(60000):undefined});
+ if(!r.ok||(r.headers.get('content-type')||'').includes('json')){let j=null;try{j=await r.json()}catch(e){}throw new Error((j&&j.msg)||'المساعد مش متاح دلوقتي')}
+ if(!r.body||!r.body.getReader){const t=await r.text();if(t)on(t);return}
+ const rd=r.body.getReader(),dc=new TextDecoder();let acc='';
+ for(;;){const{done,value}=await rd.read();if(done)break;acc+=dc.decode(value,{stream:true});on(acc)}
+ acc+=dc.decode();if(!acc.trim())throw new Error('ماقدرتش أرد على ده، جرّب تسأل بطريقة تانية');on(acc);
+};
 /* AI الدعم: بيرد على رسالة الطالب في شات الدعم (من غير زرار). لو معرفش يحلها بيسجّلها في "مشاكل لم تحل" */
 const supAI=()=>{
  if(isA()||!auth.currentUser)return;
  clearTimeout(SUP.aiT);
- SUP.aiT=setTimeout(async()=>{SUP.aiw=1;typPaint();try{await aiCall('/support',{})}catch(e){}SUP.aiw=0;typPaint()},1200);
+ SUP.aiT=setTimeout(async()=>{SUP.aiw=1;typPaint();let note='';
+  try{const tk=await auth.currentUser.getIdToken(),r=await fetch(AI_URL+'/support',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+tk},body:'{}'}),j=await r.json().catch(()=>({}));
+   if(!j.ok)note='⚠️ الدعم الآلي: '+(j.why||j.msg||r.status);else if(j.why&&j.why!='ok'&&j.why!='nothing')note='🤖 الدعم الآلي ساكت: '+({human:'أدمن رد في آخر 24 ساعة'}[j.why]||j.why)}
+  catch(e){note='⚠️ مفيش اتصال بالدعم الآلي'}
+  SUP.aiw=0;typPaint();
+  if(note){const e=$('#sup_sub');if(e){e.textContent=note;clearTimeout(SUP.tt);SUP.tt=setTimeout(typPaint,9000)}}},250);
 };
 /* py AI: مساعد بايثون (زرار واضح للطالب) */
 const PY={h:[],busy:0};
@@ -2542,8 +2556,10 @@ const pySend=async(mode,full)=>{
  }else if(!q)return;
  if(ta){ta.value='';ta.style.height=''}
  PY.h.push({r:'u',t:shown});PY.busy=1;pyPaint();
- try{const j=await aiCall('/explain',body);PY.h.push({r:'m',t:j.reply+(j.cut?'\n\n… (الرد اتقطع، اكتب "كمّل")':'')})}
- catch(x){PY.h.push({r:'m',t:'⚠️ '+(x.message||'حصلت مشكلة، جرّب تاني'),e:1})}
+ PY.cur=null;
+ try{await aiStream('/explain',{...body,stream:true},t=>{if(!PY.cur){PY.cur={r:'m',t:''};PY.h.push(PY.cur);PY.busy=0}PY.cur.t=t;pyPaint()})}
+ catch(x){if(PY.cur&&PY.cur.t)PY.cur.t+='\n\n⚠️ '+(x.message||'الرد اتقطع');else PY.h.push({r:'m',t:'⚠️ '+(x.message||'حصلت مشكلة، جرّب تاني'),e:1})}
+ PY.cur=null;
  PY.busy=0;if(PY.h.length>40)PY.h=PY.h.slice(-40);pyPaint();
 };
 const pyClose=()=>$('#pyai')?.remove();
