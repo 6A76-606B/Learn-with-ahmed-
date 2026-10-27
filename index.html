@@ -974,6 +974,29 @@ header button{white-space:nowrap;flex:none}
 .vbar{cursor:pointer}
 .vtm{flex:none;font:600 12px var(--mono);opacity:.8;direction:ltr}
 @media(prefers-reduced-motion:reduce){.recd,.recw i{animation:none!important}}
+
+/* ui2: واجهة هادية للموبايل — ازرار أقل، وكل زرار بلونه وأيقونته */
+.bgfx b,.bgfx u{display:none}.bgfx i{animation:none;opacity:calc(var(--bo)*.45)}
+#app .y::after{display:none}
+@media(hover:none){#app button:hover:not(:disabled),#app .btn:hover{transform:none}}
+.card{background:var(--s1);border-radius:20px;box-shadow:none}
+main{padding:14px 14px calc(112px + env(safe-area-inset-bottom))}
+header{padding:10px 14px;padding-top:calc(10px + env(safe-area-inset-top));gap:10px;border-bottom:1px solid var(--ln)}
+.lg{background:linear-gradient(135deg,#306998,#4b8bbe);animation:none}.lg::before{display:none}.lg span{animation:none}
+.brand b,header.ha .brand b{display:block;font-size:16px}
+header .admt{width:42px;padding:0!important;border-radius:50%!important}
+header .supb{color:#2fbf6f}
+.bnav{position:fixed;left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom));z-index:30;max-width:520px;margin:auto;display:flex;gap:4px;padding:6px;border-radius:26px;background:var(--glass);backdrop-filter:blur(20px) saturate(1.6);-webkit-backdrop-filter:blur(20px) saturate(1.6);border:1px solid var(--ln2);box-shadow:var(--sh)}
+#app .bnav button{flex:1 1 0;flex-direction:column;gap:3px;min-width:0;min-height:58px;padding:8px 2px 6px;border:0;border-radius:20px;background:transparent;color:var(--m);font:600 11.5px var(--disp);box-shadow:none}
+#app .bnav button:hover:not(:disabled){transform:none}
+#app .bnav svg{width:24px;height:24px;transition:transform .35s var(--spring)}
+#app .bnav button.act{background:var(--ca);color:var(--c)}
+#app .bnav button.act svg{transform:translateY(-2px) scale(1.1)}
+.pmenu{max-height:calc(100dvh - 90px);overflow:auto}
+.pmenu button i{flex:none;width:32px;height:32px;border-radius:10px;display:grid;place-items:center;font-style:normal;font-size:16px;background:var(--ca)}
+.pmenu hr{border:0;border-top:1px solid var(--ln);margin:6px 4px}
+.pmenu .bdg{margin-inline-start:auto}
+#app .pav.dot::after{content:"";position:absolute;top:3px;inset-inline-start:3px;width:10px;height:10px;border-radius:50%;background:var(--r);border:2px solid var(--bg)}
 </style>
 </head>
 <body>
@@ -1065,6 +1088,8 @@ const player=(i,o)=>vpHtml(i,o);
 const empty=(t='لسه مفيش محتوى هنا.',i='📭')=>`<div class=empty><div>${i}</div>${t}</div>`,spin='<div class=ld><i></i></div>';
 const ring=(p,c='')=>`<div class="ring ${c}"><svg viewBox="0 0 120 120"><circle class=bgc cx=60 cy=60 r=52 /><circle class=fgc cx=60 cy=60 r=52 style="--p:${p}"/></svg><b><span data-count=${p}>${p}</span>%</b></div>`;
 const tabs=T=>`<div class="tabs${T.length>4?' many':''}">${T.map(([k,t])=>`<button class="${S.tab==k?'on':'s'}" data-a=tab data-id=${k}>${t}</button>`).join('')}</div>`;
+const BN={v:['#5b9be0','<circle cx=12 cy=12 r=10 /><path d="m10 8 6 4-6 4z"/>'],f:['#2fbf6f','<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/>'],q:['#ffb020','<path d="m9 11 3 3 7-7"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9"/>'],e:['#a78bfa','<path d="m16 18 6-6-6-6M8 6l-6 6 6 6"/>']};
+const bnav=T=>`<nav class=bnav aria-label="التنقل">${T.map(([k,t])=>{const[c,p]=BN[k]||BN.v;return `<button type=button class="${S.tab==k?'act':''}"${S.tab==k?' aria-current=page':''} data-a=tab data-id=${k} style="--c:${c};--ca:${c}2b"><svg viewBox="0 0 24 24" fill=none stroke=currentColor stroke-width=2 stroke-linecap=round stroke-linejoin=round aria-hidden=true>${p}</svg><span>${t.replace(/^\S+\s/,'')}</span></button>`}).join('')}</nav>`;
 const errMsg=x=>({
  'permission-denied':'مفيش صلاحية للوصول. اتأكد إنك نشرت الـ Rules الجديدة اللي في أول الملف.',
  'auth/unauthorized-domain':'دومين الموقع مش مضاف في Firebase ← Authentication ← Settings ← Authorized domains.',
@@ -1091,13 +1116,13 @@ const dn=id=>!!S.prog.done?.[id];
 const saveP=async d=>{try{await setDoc(doc(db,'progress',S.u.uid),{...d,at:serverTimestamp()},{merge:true})}catch(x){alert('تعذّر حفظ التقدّم: '+errMsg(x))}};
 
 const supBtn=()=>{const n=supN(),on=isA()&&S.adm&&S.tab=='ai';return `<button class="${on?'y':'s'} ico supb" data-a=supopen title="${isA()?'المحادثات':'الدعم'}">${IC.chat}<b class=bdg${n?'':' hidden'}>${n>9?'9+':n||''}</b></button>`};
-const head=()=>`<header class="${isA()?'ha':''}">${brand()}${isA()?`<button class="y sm" data-a=adm title="${S.adm?'عرض كطالب':'لوحة التحكم'}">${S.adm?'👁<span class=hl> عرض كطالب</span>':'⚙️<span class=hl> لوحة التحكم</span>'+(repN()||unsN()?'<i class=rdot></i>':'')}</button>`:''}${pyHead()}${folBtn("s sm")}${supBtn()}${secBtn()}${pwaBtn()}${thm()}${isA()?(S.u.photoURL?`<img class="av hide-s" src="${E(S.u.photoURL)}" referrerpolicy=no-referrer alt="">`:'')+'<button class="s sm" data-a=out>خروج</button>':pavBtn()}</header>`;
-const pavBtn=()=>{const p=safe(S.me?.photo||S.u.photoURL||'');return `<button type=button class=pav data-a=pmenu title="حسابي" aria-label="حسابي" aria-haspopup=menu>${p?`<img src="${E(p)}" referrerpolicy=no-referrer alt="">`:'<span>👤</span>'}</button>`};
+const head=()=>`<header class="${isA()?'ha':''}">${brand()}${isA()?`<button class="y admt" data-a=adm title="${S.adm?'عرض كطالب':'لوحة التحكم'}" aria-label="${S.adm?'عرض كطالب':'لوحة التحكم'}">${S.adm?'👁':'⚙️'}${repN()||unsN()?'<i class=rdot></i>':''}</button>`:''}${supBtn()}${pavBtn()}</header>`;
+const pavBtn=()=>{const p=safe(S.me?.photo||S.u.photoURL||''),n=isA()?0:secUnread();return `<button type=button class="pav${n?' dot':''}" data-a=pmenu title="حسابي" aria-label="حسابي" aria-haspopup=menu>${p?`<img src="${E(p)}" referrerpolicy=no-referrer alt="">`:'<span>👤</span>'}</button>`};
 
 const stuTabs=()=>{const c=cfg(),A=isA();return [['v','🎬 الدروس'],(c.files||A)&&['f','📎 الملفات'],(c.quiz||A)&&['q','📝 الاختبار'],(c.editor||A)&&['e','💻 المحرر']].filter(Boolean)};
 const stu=()=>{
  const T=stuTabs();if(!T.some(t=>t[0]==S.tab))S.tab='v';
- let h=(cfg().ann?`<div class=ann><b>📢</b><div>${E(cfg().ann).replace(/\n/g,'<br>')}</div></div>`:'')+tabs(T);
+ let h=(cfg().ann?`<div class=ann><b>📢</b><div>${E(cfg().ann).replace(/\n/g,'<br>')}</div></div>`:'');
  if(S.tab=='v'){
   const L=lessons();
   if(!L.length)return h+empty('لسه مفيش دروس، استنى أول درس قريب.','🎬');
@@ -1309,14 +1334,20 @@ const openPM=btn=>{
  if(pm){closePM();return}
  const nm=S.me?.name||S.u.displayName||'طالب',em=S.u.email||'',ph=safe(S.me?.photo||S.u.photoURL||'');
  const d=document.createElement('div');d.className='pmenu';d.setAttribute('role','menu');
- d.innerHTML=`<div class=pmh>${ph?`<img src="${E(ph)}" referrerpolicy=no-referrer alt="">`:'<span>👤</span>'}<div><b dir=auto>${E(nm)}</b><small dir=ltr>${E(em)}</small></div></div>`
-  +`<button type=button role=menuitem data-p=name>✏️ تعديل الاسم</button><button type=button role=menuitem data-p=photo>📷 تغيير الصورة</button>${standalone()?'':'<button type=button role=menuitem data-p=pwa>📲 حمّل كتطبيق</button>'}<button type=button role=menuitem data-p=out>🚪 تسجيل خروج</button><button type=button role=menuitem class=dng data-p=del>🗑 حذف الحساب</button>`;
+ const A=isA(),n=A?0:secUnread(),mi=(c,ic,t,at,x='')=>`<button type=button role=menuitem ${at} style="--ca:${c}2b"${x}><i>${ic}</i><span>${t}</span></button>`;
+  d.innerHTML=`<div class=pmh>${ph?`<img src="${E(ph)}" referrerpolicy=no-referrer alt="">`:'<span>👤</span>'}<div><b dir=auto>${E(nm)}</b><small dir=ltr>${E(em)}</small></div></div>`
+   +(A?'':mi('#5b9be0','✏️','تعديل الاسم','data-p=name')+mi('#2fbf6f','📷','تغيير الصورة','data-p=photo')+'<hr>')
+   +mi('#ffd43b','🐍','py AI — مساعد بايثون','data-a=pyai')
+   +(!A&&S.sec1?mi('#a78bfa','🔒','محادثة خاصة','data-a=secme').replace('</button>',n?`<b class=bdg>${n}</b></button>`:'</button>'):'')
+   +mi('#ffb020','🌓','لايت / دارك','data-a=theme')+mi('#ef6f9b','❤️','تابعنا','data-a=follow')
+   +(standalone()?'':mi('#5b9be0','📲','حمّل كتطبيق','data-p=pwa'))+'<hr>'
+   +mi('#ef4f5f','🚪','تسجيل خروج','data-p=out')+(A?'':mi('#ef4f5f','🗑','حذف الحساب','data-p=del',' class=dng'));
  document.body.append(d);
  const r=btn.getBoundingClientRect(),w=d.offsetWidth;
  d.style.top=(r.bottom+8)+'px';d.style.left=Math.max(8,Math.min(r.left,innerWidth-w-8))+'px';
  requestAnimationFrame(()=>d.classList.add('on'));
  d.onclick=e=>{
-  const b=e.target.closest('[data-p]');if(!b)return;const k=b.dataset.p;closePM();
+  const b=e.target.closest('button');if(!b)return;if(b.dataset.a){closePM();return}const k=b.dataset.p;if(!k)return;closePM();
   if(k=='name'){S.editProf=1;S.pfKey='';render();setTimeout(()=>{const i=$('#onb_nm');if(i){i.focus();i.select()}},120)}
   else if(k=='photo'){S.editProf=1;S.pfKey='';render();setTimeout(()=>$('#onb_fi')?.click(),60)}
   else if(k=='pwa'){pwaHide(1);pwaClick()}
@@ -1637,7 +1668,7 @@ const view=()=>!S.ready?spin
  :needAdmName()?admOnb()
  :needProf()?onb()
  :!S.pl?spin
- :head()+`<main class="${S.adm&&isA()?'wide':''}">${S.adm&&isA()?admin():stu()}</main>`;
+ :head()+`<main class="${S.adm&&isA()?'wide':''}">${S.adm&&isA()?admin():stu()}</main>${S.adm&&isA()?'':bnav(stuTabs())}`;
 
 /* تحديث ذكي: بيحافظ على الفيديو المشغّل وعلى اللي الأدمن كاتبه في الفورم */
 const patch=h=>{
