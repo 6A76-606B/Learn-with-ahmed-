@@ -1609,11 +1609,14 @@ header .supb{color:var(--m)}header .supb:hover{color:var(--t)}
 </style>
 <style id="x-grp">
 /* ===== GROUP ===== */
-.gp{display:flex;flex-direction:column;border:1px solid var(--ln2);border-radius:20px;background:var(--s1);overflow:hidden;box-shadow:0 20px 50px -28px #2f7bff}
+html.grp-on,body.grp-on{overflow:hidden!important;overscroll-behavior:none;height:100%}
+#grp-ov{position:fixed;inset:0;z-index:200;display:flex;flex-direction:column;background:var(--bg);padding-top:env(safe-area-inset-top);animation:fadeIn .25s both}
+.gp{display:flex;flex-direction:column;flex:1;min-height:0;background:var(--s1);overflow:hidden}
+#g_main{display:flex;flex-direction:column;flex:1;min-height:0}
 .gph{display:flex;align-items:center;gap:8px;padding:12px 14px;border-bottom:1px solid var(--ln);background:linear-gradient(135deg,#1d4ed822,#22d3ee11)}
 .gph b{font:700 17px var(--disp)}
 .gpn{margin:10px;padding:12px;border-radius:12px;background:#3b8bff1c;border:1px solid #3b8bff55;line-height:1.7;text-align:center}
-.gpbox{height:min(58vh,540px);overflow-y:auto;padding:10px 12px;display:flex;flex-direction:column;gap:4px;scroll-behavior:smooth}
+.gpbox{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:10px 12px;display:flex;flex-direction:column;gap:4px;scroll-behavior:smooth}
 .gm{display:flex;gap:8px;align-items:flex-end;max-width:88%;animation:x-up .35s var(--ease) both}
 .gm.me{align-self:flex-end;flex-direction:row-reverse}
 .gpav{width:34px;height:34px;border-radius:50%;flex:none;object-fit:cover;display:grid;place-items:center;background:linear-gradient(135deg,#3b8bff,#22d3ee);color:#fff;font:700 14px var(--disp)}
@@ -1638,7 +1641,7 @@ header .supb{color:var(--m)}header .supb:hover{color:var(--t)}
 .gpa button:hover{background:#ffffff2a}
 .gpeb,.gppv{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 12px;background:#3b8bff1c;border-top:1px solid var(--ln)}
 .gppv img{max-height:70px;border-radius:8px}
-.gpin{display:flex;gap:6px;align-items:flex-end;padding:10px;border-top:1px solid var(--ln);background:var(--s1)}
+.gpin{display:flex;gap:6px;align-items:flex-end;padding:10px 10px calc(10px + env(safe-area-inset-bottom));border-top:1px solid var(--ln);background:var(--s1)}
 .gpin textarea{flex:1;min-height:42px;max-height:140px;resize:none;margin:0;border-radius:14px}
 .gpin textarea.code{font:13px var(--mono)}
 .gpin .ico{flex:none;height:42px}
@@ -1649,7 +1652,7 @@ header .supb{color:var(--m)}header .supb:hover{color:var(--t)}
 .gpm .g{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .gpzoom{position:fixed;inset:0;z-index:300;background:#000d;display:grid;place-items:center;cursor:zoom-out;animation:fadeIn .25s both}
 .gpzoom img{max-width:94vw;max-height:90vh;border-radius:12px}
-@media(max-width:640px){.gpbox{height:calc(100dvh - 330px);min-height:280px}.gm{max-width:96%}}
+@media(max-width:640px){.gm{max-width:96%}}
 </style>
 <style id="x-fx">
 /* ===== BLUE FX LAYER ===== */
@@ -2482,7 +2485,7 @@ const grpMembers=()=>{
  return a.map(u=>{const r=u.role||'s',self=u.id==S.u.uid,k=!self&&((me=='o'&&r!='o')||(me=='a'&&r=='s'));
   return `<div class=gpm>${grpAv(u,u.name)}<div class=g><b dir=auto>${E(grpClean(u.name||u.email,r))}</b>${grpBadge(r)}${u.kicked?'<span class="gpb gk">اتشال</span>':''}${u.pending?'<span class=m> · لسه مدخلش</span>':''}</div>${k?(u.kicked?`<button type=button class="s sm" data-g=kick data-id="${E(u.id)}" data-v=0>↩ رجّعه</button>`:`<button type=button class="r sm" data-g=kick data-id="${E(u.id)}" data-v=1>⛔ إخراج</button>`):''}</div>`}).join('')||empty('لسه مفيش أعضاء.','👥')};
 const grpPaint=()=>{
- const host=app.querySelector('[data-keep=grp]');if(!host||!host.dataset.m)return;
+ const host=GRP.el;if(!host||!host.isConnected)return;
  const q=s=>host.querySelector(s),kicked=!!GRP.mem[S.u.uid]?.kicked,closed=!!GRP.cfg.closed,box=q('#g_box');
  q('#g_kick').hidden=!kicked;q('#g_main').hidden=kicked;q('#g_cl').hidden=!closed;
  q('#g_cnt').textContent=Object.values(GRP.mem).filter(u=>!u.kicked).length+' عضو'+(closed?' · 🔒 مقفول':'');
@@ -2495,9 +2498,9 @@ const grpPaint=()=>{
 const grpJoin=()=>{if(GRP.joined||!S.u||GRP.mem[S.u.uid])return;GRP.joined=1;setDoc(doc(db,'gmembers',S.u.uid),{name:grpName(),photo:grpPhoto(),role:grpRole(),at:serverTimestamp()}).catch(()=>{GRP.joined=0})};
 const grpSub=()=>{if(GRP.sub)return;GRP.sub=1;const f=()=>0;
  GRP.un=[onSnapshot(query(collection(db,'gmsgs'),orderBy('at','desc'),limit(200)),s=>{GRP.msgs=s.docs.map(d=>({id:d.id,...d.data({serverTimestamps:'estimate'})})).reverse();GRP.err='';grpPaint()},x=>{GRP.err=x?.code=='permission-denied'?'perm':String(x?.message||x);grpPaint()}),
- onSnapshot(collection(db,'gmembers'),s=>{GRP.mem=Object.fromEntries(s.docs.map(d=>[d.id,d.data()]));const k=!!GRP.mem[S.u.uid]?.kicked;if(GRP.kk&&!k){GRP.kk=0;grpStop();grpSub();return}GRP.kk=k;grpJoin();grpSync();grpPaint()},f),
+ onSnapshot(collection(db,'gmembers'),s=>{GRP.mem=Object.fromEntries(s.docs.map(d=>[d.id,d.data()]));const k=!!GRP.mem[S.u.uid]?.kicked;if(GRP.kk&&!k){GRP.kk=0;grpStop();grpTick();return}GRP.kk=k;grpJoin();grpSync();grpPaint()},f),
  onSnapshot(doc(db,'gcfg','main'),s=>{GRP.cfg=s.exists()?s.data():{};grpPaint()},f)]};
-const grpStop=()=>{if(!GRP.sub)return;GRP.un.forEach(f=>f());GRP.un=[];GRP.sub=0;GRP.msgs=[];GRP.mem={};GRP.lh='';GRP.edit=null;GRP.img=null;GRP.code=0;GRP.err='';if(GRP.rec)try{GRP.rec.mr.stop()}catch(e){}};
+const grpStop=()=>{if(GRP.el){GRP.el.remove();GRP.el=null}document.documentElement.classList.remove('grp-on');document.body.classList.remove('grp-on');if(!GRP.sub)return;GRP.un.forEach(f=>f());GRP.un=[];GRP.sub=0;GRP.msgs=[];GRP.mem={};GRP.lh='';GRP.edit=null;GRP.img=null;GRP.code=0;GRP.err='';if(GRP.rec)try{GRP.rec.mr.stop()}catch(e){}};
 const grpMode=()=>{const t=$('#g_in');if(!t)return;t.classList.toggle('code',!!GRP.code);t.dir=GRP.code?'ltr':'auto';$('#g_cd').classList.toggle('y',!!GRP.code);$('#g_cd').classList.toggle('s',!GRP.code);$('#g_eb').hidden=!GRP.edit;$('#g_sd').textContent=GRP.edit?'✓':'➤';t.style.height='auto';t.style.height=Math.min(t.scrollHeight,140)+'px'};
 const grpEditOff=()=>{GRP.edit=null;GRP.code=0;const t=$('#g_in');if(t)t.value='';grpMode()};
 const grpPv=()=>{const p=$('#g_pv');if(!p)return;p.hidden=!GRP.img;p.innerHTML=GRP.img?`<img src="${E(GRP.img)}" alt=""><button type=button class="r sm" data-g=rmimg>✕ شيل الصورة</button>`:''};
@@ -2543,10 +2546,12 @@ const grpClick=e=>{const b=e.target.closest('[data-g]');if(!b)return;const a=b.d
  else if(a=='cp'&&m)navigator.clipboard?.writeText(m.text||'').then(()=>{b.textContent='✓ اتنسخ'}).catch(()=>0);
  else if(a=='zoom'&&m)grpZoom(m.img);
  else if(a=='kick')grpKick(id,+b.dataset.v);
+ else if(a=='back'){S.tab='v';S.watch=null;render();scrollTo(0,0)}
 };
 const grpMount=()=>{
- const host=app.querySelector('[data-keep=grp]');if(!host){grpStop();return}if(host.dataset.m)return;host.dataset.m=1;
- host.innerHTML=`<div class=gp><div class=gph><div class=g><b>👥 الجروب</b><div class=m id=g_cnt>…</div></div><button type=button class="s sm" data-g=mem>👥 الأعضاء</button><button type=button class="s sm" id=g_lock data-g=lock hidden></button></div><div id=g_kick class=gpn hidden>⛔ اتشلت من الجروب. كلّم الأدمن لو عايز ترجع.</div><div id=g_main><div id=g_mem class=gpmem hidden></div><div id=g_cl class=gpn hidden>🔒 الجروب مقفول، الأدمن بس اللي بيكتب دلوقتي.</div><div id=g_box class=gpbox></div><div id=g_eb class=gpeb hidden><span>✏️ بتعدّل رسالتك</span><button type=button class="gh sm" data-g=noedit>✕ إلغاء</button></div><div id=g_pv class=gppv hidden></div><div class=gpin><input id=g_f type=file accept="image/*" hidden><button type=button class="s ico" data-g=img title="صورة">🖼️</button><button type=button id=g_mic class="s ico" data-g=mic title="رسالة صوتية">🎤</button><button type=button id=g_cd class="s ico" data-g=code title="كود">💻</button><textarea id=g_in rows=1 maxlength=20000 dir=auto placeholder="اكتب رسالة…"></textarea><button type=button id=g_sd class="y ico" data-g=send title="إرسال">➤</button></div></div></div>`;
+ const ph=app.querySelector('[data-keep=grp]');if(!ph){grpStop();return}if(GRP.el&&GRP.el.isConnected)return;
+ const host=GRP.el=document.createElement('div');host.id='grp-ov';document.body.appendChild(host);document.documentElement.classList.add('grp-on');document.body.classList.add('grp-on');
+ host.innerHTML=`<div class=gp><div class=gph><button type=button class="s ico" data-g=back title="رجوع" aria-label="رجوع">→</button><div class=g><b>👥 الجروب</b><div class=m id=g_cnt>…</div></div><button type=button class="s sm" data-g=mem>👥 الأعضاء</button><button type=button class="s sm" id=g_lock data-g=lock hidden></button></div><div id=g_kick class=gpn hidden>⛔ اتشلت من الجروب. كلّم الأدمن لو عايز ترجع.</div><div id=g_main><div id=g_mem class=gpmem hidden></div><div id=g_cl class=gpn hidden>🔒 الجروب مقفول، الأدمن بس اللي بيكتب دلوقتي.</div><div id=g_box class=gpbox></div><div id=g_eb class=gpeb hidden><span>✏️ بتعدّل رسالتك</span><button type=button class="gh sm" data-g=noedit>✕ إلغاء</button></div><div id=g_pv class=gppv hidden></div><div class=gpin><input id=g_f type=file accept="image/*" hidden><button type=button class="s ico" data-g=img title="صورة">🖼️</button><button type=button id=g_mic class="s ico" data-g=mic title="رسالة صوتية">🎤</button><button type=button id=g_cd class="s ico" data-g=code title="كود">💻</button><textarea id=g_in rows=1 maxlength=20000 dir=auto placeholder="اكتب رسالة…"></textarea><button type=button id=g_sd class="y ico" data-g=send title="إرسال">➤</button></div></div></div>`;
  host.addEventListener('click',grpClick);
  host.addEventListener('keydown',e=>{if(e.target.id=='g_in'&&e.key=='Enter'&&!e.shiftKey&&!GRP.code&&!e.isComposing&&matchMedia('(pointer:fine)').matches){e.preventDefault();grpSend()}});
  host.addEventListener('input',e=>{if(e.target.id=='g_in'){e.target.style.height='auto';e.target.style.height=Math.min(e.target.scrollHeight,140)+'px'}});
