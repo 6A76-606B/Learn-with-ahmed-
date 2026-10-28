@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Learn with Ahmed</title>
-<script>try{var t=localStorage.getItem('theme')||'dark';document.documentElement.dataset.theme=t;document.querySelector('meta[name=theme-color]').content=t=='dark'?'#0b0d10':'#f5f8fd'}catch(e){}</script>
+<script>try{var t=localStorage.getItem('theme')||(matchMedia('(prefers-color-scheme: light)').matches?'light':'dark');document.documentElement.dataset.theme=t;document.querySelector('meta[name=theme-color]').content=t=='dark'?'#0b0d10':'#f5f8fd'}catch(e){}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -1593,6 +1593,19 @@ input:focus,select:focus,textarea:focus{border-color:var(--accsoft)!important;bo
 .pyaih svg,.pyai svg{width:16px;height:16px;vertical-align:-3px}
 .supb svg{width:19px;height:19px}
 header .supb{color:var(--m)}header .supb:hover{color:var(--t)}
+
+/* ===================== إصلاحات من لقطة الشاشة ===================== */
+/* رسالة الطالب كانت فاتحة بنص أبيض في الوضع الفاتح = مش مقروءة */
+[data-theme=light] .sb.me{background:var(--acc);color:#fff;border-color:transparent}
+[data-theme=light] .sb.me .rq{background:#ffffff26;border-inline-start-color:#fff}
+[data-theme=light] .sb.me .tk.sn{color:#cfe9ff}
+/* تسمية py AI كانت بنّي/أصفر: لون هادي موحّد */
+.sb .san,[data-theme=dark] .sb .san,[data-theme=light] .san{color:var(--a)}
+/* أزرار هيدر الشات: محايدة بدل الأخضر والأزرق الفاتح، والحذف يفضل أحمر هادي */
+.suph button,.aph button{background:var(--chip)!important;color:var(--t);border:1px solid var(--ln);transition:background-color .18s,border-color .18s}
+.suph button:hover,.aph button:hover{background:var(--s3)!important;border-color:var(--ln2)}
+.suph [data-a=supdel],.suph [data-p=clr]{background:#e5707a1f!important;color:#e5707a}
+.supav{border-width:1px}
 </style>
 </head>
 <body>
@@ -3272,7 +3285,7 @@ const pyClose=()=>$('#pyai')?.remove(),pyStop=()=>{if(!PY.gen)return;PY.stop=1;P
 const pyOpen=()=>{
  if($('#pyai')||!auth.currentUser)return;
  const w=document.createElement('div');w.id='pyai';w.className='supw';
- w.innerHTML=`<div class=supp><div class=suph><button type=button data-p=close title="رجوع">→</button><span class=supav><svg class="ic-ai" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.8 4.9 4.9 1.8-4.9 1.8L12 16.4l-1.8-4.9-4.9-1.8 4.9-1.8L12 3z"/><path d="M19 15.5l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7.7-1.9z"/></svg></span><div class=g><b>py AI</b><small>مساعد بايثون: شرح وأسئلة وأخطاء</small></div><button type=button data-p=hist title="السجل">🕘</button><button type=button data-p=new title="محادثة جديدة">✚</button></div>${lenBar('data-p=len')}<div class=supm id=py_m></div><form class=supf id=py_f autocomplete=off><button type=button class=supatt data-p=code title="بلوك كود / كودي من المحرر" aria-label="كود" style="font:700 13px var(--mono)">&lt;/&gt;</button><textarea id=py_in dir=auto rows=1 maxlength=4000 enterkeyhint=send placeholder="اسأل في بايثون…"></textarea><button type=submit class=supsend title="إرسال">${SEND_I}</button></form></div>`;
+ w.innerHTML=`<div class=supp><div class=suph><button type=button data-p=close title="رجوع">→</button><span class=supav><svg class="ic-ai" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.8 4.9 4.9 1.8-4.9 1.8L12 16.4l-1.8-4.9-4.9-1.8 4.9-1.8L12 3z"/><path d="M19 15.5l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7.7-1.9z"/></svg></span><div class=g><b>py AI</b><small>مساعد بايثون: شرح وأسئلة وأخطاء</small></div><button type=button data-p=hist title="السجل"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" width="19" height="19" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></button><button type=button data-p=new title="محادثة جديدة"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" width="19" height="19" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button></div>${lenBar('data-p=len')}<div class=supm id=py_m></div><form class=supf id=py_f autocomplete=off><button type=button class=supatt data-p=code title="بلوك كود / كودي من المحرر" aria-label="كود" style="font:700 13px var(--mono)">&lt;/&gt;</button><textarea id=py_in dir=auto rows=1 maxlength=4000 enterkeyhint=send placeholder="اسأل في بايثون…"></textarea><button type=submit class=supsend title="إرسال">${SEND_I}</button></form></div>`;
  w.addEventListener('click',e=>{
   if(e.target===w)return pyClose();
   const p=e.target.closest('[data-p]')?.dataset.p;if(!p)return;
